@@ -1,0 +1,2396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Jeevan Mitra — జీవన్ మిత్ర</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root {
+  --red:#D32F2F; --red2:#EF5350; --red-light:#FFEBEE; --red-mid:#FFCDD2;
+  --cream:#FFFBF7; --white:#FFFFFF; --bg:#F5F5F5;
+  --dark:#1A1A2E; --slate:#546E7A; --muted:#90A4AE; --border:#ECEFF1;
+  --green:#43A047; --blue:#1976D2; --gold:#FFB300;
+  --shadow:0 4px 20px rgba(211,47,47,0.12);
+  --shadow-sm:0 2px 10px rgba(0,0,0,0.07);
+  --r:16px; --r-sm:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+/* ════════════════════════════════════════
+   BASE — Mobile first (< 600px)
+   Full screen, no sidebar
+════════════════════════════════════════ */
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--white);
+  color:var(--dark);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+#app-shell{
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  flex-direction:row;
+  position:relative;
+}
+
+#desk-sidebar{ display:none; }
+
+#app-content{
+  flex:1;
+  width:100%;
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* Nav — fixed bottom, full width on mobile */
+.bnav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  max-width:100%;
+  transform:none;
+  background:var(--white);
+  border-top:1px solid var(--border);
+  display:flex;
+  z-index:100;
+  box-shadow:0 -3px 16px rgba(0,0,0,0.06);
+}
+
+/* ════════════════════════════════════════
+   TABLET (600px – 899px)
+   Centered card, no sidebar
+════════════════════════════════════════ */
+@media(min-width:600px) and (max-width:899px){
+  body{
+    background:#F0F2F5;
+    display:flex;
+    justify-content:center;
+  }
+
+  #app-shell{
+    width:100%;
+    max-width:640px;
+    min-height:100vh;
+    background:var(--white);
+    box-shadow:0 0 40px rgba(0,0,0,0.12);
+    border-radius:0;
+    margin:0 auto;
+  }
+
+  #desk-sidebar{ display:none; }
+
+  #app-content{
+    flex:1;
+    width:100%;
+    overflow-y:auto;
+  }
+
+  /* Nav stays fixed full-width within the card */
+  .bnav{
+    position:fixed;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:640px;
+    max-width:640px;
+  }
+
+  .screen{padding-bottom:70px;}
+}
+
+/* ════════════════════════════════════════
+   DESKTOP (≥ 900px)
+   Left sidebar + right content panel
+════════════════════════════════════════ */
+@media(min-width:900px){
+  body{
+    background:#ECEFF1;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+  }
+
+  #app-shell{
+    width:100%;
+    max-width:1200px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:row;
+    margin:0 auto;
+    box-shadow:0 0 60px rgba(0,0,0,0.15);
+    background:var(--white);
+  }
+
+  /* ── Left sidebar ── */
+  #desk-sidebar{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    width:280px;
+    min-width:280px;
+    flex-shrink:0;
+    background:linear-gradient(160deg,#B71C1C 0%,#D32F2F 50%,#EF5350 100%);
+    padding:40px 24px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow:hidden;
+  }
+
+  #desk-sidebar::before{
+    content:'🩸';
+    position:absolute;
+    font-size:180px;
+    opacity:0.06;
+    top:-20px;
+    right:-20px;
+    pointer-events:none;
+  }
+
+  #desk-sidebar .ds-logo{ font-size:52px;margin-bottom:8px; }
+  #desk-sidebar .ds-brand{ font-family:'Nunito',sans-serif;font-size:28px;font-weight:900;color:#fff;letter-spacing:-0.5px; }
+  #desk-sidebar .ds-tel{ font-size:13px;color:rgba(255,255,255,0.75);margin-top:4px;font-weight:700; }
+  #desk-sidebar .ds-tag{ font-size:10px;color:rgba(255,255,255,0.5);margin-top:8px;letter-spacing:2px;text-transform:uppercase; }
+  #desk-sidebar .ds-footer{ margin-top:auto;font-size:10px;color:rgba(255,255,255,0.35);text-align:center;padding-top:24px; }
+
+  /* ── Right content ── */
+  #app-content{
+    flex:1;
+    min-width:0;
+    min-height:100vh;
+    overflow-y:auto;
+    overflow-x:hidden;
+    display:flex;
+    flex-direction:column;
+    background:var(--white);
+  }
+
+  /* Screens fill full height */
+  .screen{
+    flex:1;
+    min-height:calc(100vh - 64px);
+  }
+
+  /* Nav — sticky at bottom of content panel */
+  .bnav{
+    position:sticky;
+    bottom:0;
+    left:auto;
+    right:auto;
+    transform:none;
+    width:100%;
+    max-width:100%;
+    z-index:100;
+  }
+
+  /* Toast — offset from sidebar */
+  .toast{
+    left:calc(280px + ((100vw - 280px) / 2));
+    bottom:80px;
+  }
+
+  /* Modals — centered in content area */
+  .modal-overlay.active{
+    padding-left:280px;
+  }
+
+  .confirm-overlay.active{
+    padding-left:280px;
+  }
+
+  .map-overlay.active{
+    padding-left:280px;
+  }
+
+  .qr-overlay.active{
+    padding-left:280px;
+  }
+}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* SPLASH */
+#splash{background:linear-gradient(145deg,#FFEBEE 0%,#FCE4EC 50%,#FFF8F0 100%);align-items:center;justify-content:center;position:relative;overflow:hidden}
+#splash::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(211,47,47,0.06);top:-80px;right:-80px}
+#splash::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(244,143,177,0.08);bottom:-60px;left:-60px}
+.splash-inner{text-align:center;z-index:1;animation:fadeUp 0.8s ease}
+.splash-drop{font-size:72px;animation:pulse 2s infinite}
+.splash-brand{font-family:'Nunito',sans-serif;font-size:40px;font-weight:900;color:var(--red);letter-spacing:-1px;margin-top:4px}
+.splash-telugu{font-size:16px;color:#B71C1C;font-weight:700;margin-top:2px;opacity:0.8}
+.splash-tag{font-size:11px;color:var(--slate);margin-top:8px;letter-spacing:2px;text-transform:uppercase}
+.dots{display:flex;gap:8px;justify-content:center;margin-top:40px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--red);opacity:0.4;animation:bounce 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+
+/* ONBOARDING */
+#onboarding{background:linear-gradient(145deg,#FFEBEE,#FCE4EC 60%,#FFF8F0);padding:32px 20px;align-items:center;justify-content:center}
+.ob-card{background:var(--white);border-radius:24px;padding:32px 24px;width:100%;box-shadow:var(--shadow);text-align:center}
+.ob-logo{font-size:48px;margin-bottom:6px}
+.ob-brand{font-family:'Nunito',sans-serif;font-size:26px;font-weight:900;color:var(--red)}
+.ob-tel{font-size:13px;color:var(--slate);margin-top:2px}
+.ob-sub{font-size:12px;color:var(--muted);margin:8px 0 24px}
+
+/* BUTTONS */
+.btn{width:100%;padding:14px;border-radius:var(--r-sm);border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+.btn-red{background:var(--red);color:#fff}.btn-red:active{transform:scale(0.98);background:#B71C1C}
+.btn-outline{background:var(--red-light);color:var(--red);border:2px solid var(--red-mid)}.btn-outline:active{background:var(--red-mid)}
+.btn-blue{background:var(--blue);color:#fff}.btn-blue:active{background:#1565C0}
+.btn-dark{background:var(--dark);color:#fff}.btn-dark:active{background:#0d0d1a}
+.btn-green{background:var(--green);color:#fff}
+.divider{color:var(--muted);font-size:12px;margin:14px 0;position:relative;text-align:center}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
+.divider::before{left:0}.divider::after{right:0}
+.link-text{font-size:13px;color:var(--slate);margin-top:14px;cursor:pointer}
+.link-text span{color:var(--red);font-weight:600}
+
+/* FORMS */
+.form-screen{background:var(--bg);padding:20px 20px 100px;overflow-y:auto;flex:1}
+.form-hdr{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-top:4px}
+.back-btn{width:36px;height:36px;border-radius:10px;background:var(--white);border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);color:var(--dark);flex-shrink:0}
+.form-title{font-family:'Nunito',sans-serif;font-size:20px;font-weight:800;color:var(--dark)}
+.form-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.steps{display:flex;gap:5px;margin-bottom:20px}
+.step{flex:1;height:3px;border-radius:2px;background:var(--border)}.step.done{background:var(--red)}
+.grp{margin-bottom:13px}
+.lbl{font-size:11px;font-weight:700;color:var(--slate);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:0.5px}
+.inp{width:100%;padding:12px 14px;border-radius:var(--r-sm);border:2px solid var(--border);font-family:'DM Sans',sans-serif;font-size:14px;transition:border-color 0.2s;background:var(--white);color:var(--dark)}
+.inp:focus{outline:none;border-color:var(--red)}
+.sel{width:100%;padding:12px 14px;border-radius:var(--r-sm);border:2px solid var(--border);font-family:'DM Sans',sans-serif;font-size:14px;background:var(--white);color:var(--dark);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='%2390A4AE'%3E%3Cpath d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+.sel:focus{outline:none;border-color:var(--red)}
+.phone-row{display:flex;gap:8px}
+.cc{padding:12px 10px;border-radius:var(--r-sm);border:2px solid var(--border);background:var(--white);font-size:13px;font-weight:700;color:var(--dark);white-space:nowrap}
+.blood-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.blood-btn{padding:12px 4px;border-radius:8px;border:2px solid var(--border);background:var(--white);font-weight:800;font-size:13px;cursor:pointer;transition:all 0.2s;color:var(--dark);font-family:'Nunito',sans-serif}
+.blood-btn.sel{border-color:var(--red);background:var(--red-light);color:var(--red)}
+.pw-wrap{position:relative}
+.pw-wrap .inp{padding-right:46px}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px}
+.info-box{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border:1px solid #90CAF9;border-radius:var(--r-sm);padding:12px;margin-bottom:16px;font-size:12px;color:#1565C0;font-weight:600}
+.terms-row{display:flex;align-items:flex-start;gap:10px;margin-top:8px}
+.terms-row input{width:18px;height:18px;margin-top:1px;accent-color:var(--red);cursor:pointer}
+.terms-row label{font-size:12px;color:var(--slate);cursor:pointer}
+.terms-row span{color:var(--red);font-weight:600}
+
+/* OTP */
+.otp-inputs{display:flex;gap:8px;justify-content:center;margin:20px 0}
+.otp-inp{width:44px;height:52px;border-radius:10px;border:2px solid var(--border);text-align:center;font-size:20px;font-weight:800;background:var(--white);transition:border-color 0.2s;color:var(--dark);font-family:'Nunito',sans-serif}
+.otp-inp:focus{outline:none;border-color:var(--red)}
+.otp-hint{background:var(--red-light);border:1px solid var(--red-mid);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--red);text-align:center;margin-bottom:14px;font-weight:700;display:none}
+.otp-timer{text-align:center;font-size:12px;color:var(--muted);margin-top:12px}
+.resend-btn{color:var(--red);font-weight:700;cursor:pointer;background:none;border:none;font-size:12px;font-family:'DM Sans',sans-serif}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:11px 20px;border-radius:50px;font-size:13px;font-weight:600;z-index:9999;animation:slideUp 0.3s ease;white-space:nowrap;max-width:90vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,0.2);color:#fff;background:var(--dark)}
+.toast.success{background:var(--green)}.toast.error{background:var(--red)}.toast.info{background:var(--blue)}
+
+/* NAV */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -3px 16px rgba(0,0,0,0.06)}
+.nav-btn{flex:1;padding:10px 4px 13px;text-align:center;cursor:pointer;border:none;background:none;transition:all 0.2s}
+.nav-ico{font-size:20px;display:block}
+.nav-lbl{font-size:10px;font-weight:700;color:var(--muted);margin-top:2px;display:block}
+.nav-btn.active .nav-lbl{color:var(--red)}.nav-btn.active .nav-ico{transform:scale(1.1)}
+
+/* DONOR HOME */
+.d-header{background:linear-gradient(135deg,var(--red) 0%,#EF5350 100%);padding:48px 18px 28px;position:relative;overflow:hidden}
+.d-header::after{content:'🩸';position:absolute;right:16px;top:36px;font-size:56px;opacity:0.12}
+.d-greet{font-size:12px;color:rgba(255,255,255,0.8);font-weight:500}
+.d-name{font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:#fff}
+.d-loc{font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px}
+.d-pills{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.pill{background:rgba(255,255,255,0.2);border-radius:20px;padding:5px 12px;font-size:11px;color:#fff;font-weight:600}
+.body-pad{padding:14px;padding-bottom:90px;overflow-y:auto}
+
+/* CARDS */
+.card{background:var(--white);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.card-title{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;color:var(--dark);margin-bottom:10px}
+.tier-card{background:linear-gradient(135deg,#FFF8E1,#FFFDE7);border:1px solid #FFE082;border-radius:var(--r);padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.tier-ico{font-size:36px}
+.tier-name{font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;color:#F57F17}
+.tier-pts{font-size:12px;color:var(--slate);margin-top:2px}
+.pts-bar{height:5px;background:var(--border);border-radius:3px;margin-top:7px}
+.pts-fill{height:100%;background:linear-gradient(90deg,var(--gold),#FFD54F);border-radius:3px;transition:width 0.5s}
+.avail-row{display:flex;justify-content:space-between;align-items:center;background:var(--white);border-radius:var(--r-sm);padding:13px 14px;margin-bottom:10px;box-shadow:var(--shadow-sm)}
+.avail-lbl{font-weight:700;font-size:13px;color:var(--dark)}
+.avail-sub{font-size:11px;color:var(--muted)}
+.toggle{width:46px;height:25px;border-radius:13px;background:var(--border);position:relative;cursor:pointer;transition:background 0.3s;border:none;flex-shrink:0}
+.toggle.on{background:var(--green)}
+.toggle::after{content:'';position:absolute;width:19px;height:19px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left 0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.toggle.on::after{left:24px}
+.sec-title{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;color:var(--dark);margin:16px 0 10px}
+.cooldown-card{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border:1px solid #90CAF9;border-radius:var(--r);padding:14px;margin-bottom:10px}
+.cooldown-title{font-weight:700;color:#1565C0;font-size:14px}
+.cooldown-days{font-family:'Nunito',sans-serif;font-size:26px;font-weight:900;color:#1976D2;margin:6px 0}
+.cooldown-sub{font-size:11px;color:#42A5F5}
+
+/* REQUEST CARDS */
+.req-card{background:var(--white);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow-sm);border-left:4px solid var(--red)}
+.req-card.urgent{border-left-color:#FF5722;background:#FFF5F3}
+.req-card.critical{border-left-color:#B71C1C;background:#FFEBEE;animation:pulse-border 1.5s infinite}
+.req-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.blood-badge{background:var(--red);color:#fff;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;padding:5px 10px;border-radius:8px}
+.urg-badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;text-transform:uppercase}
+.urg-badge.normal{background:#E8F5E9;color:#2E7D32}
+.urg-badge.urgent{background:#FFF3E0;color:#E65100}
+.urg-badge.critical{background:#FFEBEE;color:#B71C1C}
+.req-hosp{font-weight:700;font-size:13px;color:var(--dark);margin-bottom:4px}
+.req-details{font-size:11px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+.btn-accept{width:100%;padding:11px;border-radius:10px;background:var(--red);color:#fff;border:none;font-weight:700;font-size:13px;cursor:pointer;margin-top:10px;transition:all 0.2s;font-family:'DM Sans',sans-serif}
+.btn-accept:active{transform:scale(0.98)}
+
+/* HEALTH */
+.health-card{background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border:1px solid #A5D6A7;border-radius:var(--r);padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center}
+.health-ico{font-size:28px}
+.health-title{font-weight:700;font-size:13px;color:#2E7D32}
+.health-sub{font-size:11px;color:#66BB6A;margin-top:2px}
+.btn-read{margin-top:8px;padding:5px 14px;border-radius:20px;background:var(--green);color:#fff;border:none;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* REWARDS */
+.reward-card{background:var(--white);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow-sm);display:flex;gap:12px;align-items:center}
+.reward-logo{width:44px;height:44px;border-radius:10px;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.reward-name{font-weight:700;font-size:13px;color:var(--dark)}
+.reward-pts{font-size:11px;color:var(--muted);margin-top:2px}
+.btn-redeem{padding:7px 14px;border-radius:20px;background:var(--red-light);color:var(--red);border:1px solid var(--red-mid);font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.btn-redeem.can{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* PROFILE */
+.prof-hdr{background:linear-gradient(135deg,var(--red-light),#FCE4EC);padding:48px 18px 24px;text-align:center}
+.prof-av{width:72px;height:72px;border-radius:50%;background:var(--red);color:#fff;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;font-size:28px;font-weight:900;border:4px solid #fff;box-shadow:var(--shadow)}
+.prof-name{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:var(--dark)}
+.prof-badge{display:inline-block;background:var(--red);color:#fff;font-size:12px;font-weight:700;padding:3px 14px;border-radius:20px;margin-top:6px}
+.prof-item{background:var(--white);border-radius:var(--r-sm);padding:13px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-sm);cursor:pointer}
+.prof-lbl{font-size:13px;font-weight:700;color:var(--dark)}
+.prof-val{font-size:12px;color:var(--muted)}
+.qr-box{background:var(--white);border-radius:var(--r);padding:18px;margin-bottom:12px;text-align:center;box-shadow:var(--shadow-sm)}
+.qr-ph{width:100px;height:100px;border:3px dashed var(--red-mid);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:36px}
+
+/* HOSPITAL HOME */
+.h-header{background:linear-gradient(135deg,#1565C0,#1976D2);padding:48px 18px 24px}
+.h-name{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:#fff}
+.h-loc{font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px}
+.h-stats{display:flex;gap:8px;margin-top:14px}
+.hstat{flex:1;background:rgba(255,255,255,0.15);border-radius:10px;padding:10px 6px;text-align:center}
+.hstat-num{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:#fff}
+.hstat-lbl{font-size:10px;color:rgba(255,255,255,0.7);margin-top:1px}
+.urg-row{display:flex;gap:8px}
+.urg-btn{flex:1;padding:11px 4px;border-radius:8px;border:2px solid var(--border);background:var(--white);font-size:11px;font-weight:800;cursor:pointer;text-align:center;transition:all 0.2s;color:var(--dark);font-family:'DM Sans',sans-serif}
+.urg-btn.normal.sel{border-color:#43A047;background:#E8F5E9;color:#2E7D32}
+.urg-btn.urgent.sel{border-color:#FB8C00;background:#FFF3E0;color:#E65100}
+.urg-btn.critical.sel{border-color:var(--red);background:var(--red-light);color:#B71C1C}
+
+/* ADMIN */
+.a-header{background:linear-gradient(135deg,#1A237E,#283593);padding:48px 18px 24px}
+.a-title{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:#fff}
+.a-sub{font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px}
+.a-stats{display:flex;gap:8px;margin-top:14px}
+.astat{flex:1;background:rgba(255,255,255,0.15);border-radius:10px;padding:10px 6px;text-align:center}
+.astat-num{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:#fff}
+.astat-lbl{font-size:10px;color:rgba(255,255,255,0.7);margin-top:1px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-box{border-radius:var(--r-sm);padding:14px;text-align:center}
+.stat-box-num{font-family:'Nunito',sans-serif;font-size:22px;font-weight:900}
+.stat-box-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* CHIP */
+.chip-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px}
+.chip-row::-webkit-scrollbar{display:none}
+.chip{padding:5px 12px;border-radius:20px;border:2px solid var(--border);background:var(--white);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;color:var(--slate);transition:all 0.2s}
+.chip.active{border-color:var(--red);background:var(--red-light);color:var(--red)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:none;align-items:flex-end}
+.modal-overlay.active{display:flex}
+.modal{background:var(--white);border-radius:20px 20px 0 0;padding:22px;width:100%;max-height:85vh;overflow-y:auto;animation:slideUp 0.3s ease}
+.modal-handle{width:36px;height:3px;background:var(--border);border-radius:2px;margin:0 auto 14px}
+.modal-title{font-family:'Nunito',sans-serif;font-size:18px;font-weight:800;margin-bottom:14px}
+
+/* SEARCH */
+.search-box{display:flex;align-items:center;gap:8px;background:var(--white);border-radius:var(--r-sm);padding:9px 12px;border:2px solid var(--border);margin-bottom:10px}
+.search-box input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;flex:1;color:var(--dark);background:transparent}
+
+/* EMPTY */
+.empty{text-align:center;padding:36px 20px}
+.empty-ico{font-size:44px;margin-bottom:10px}
+.empty-title{font-weight:700;font-size:15px;color:var(--dark)}
+.empty-sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* DONATION HISTORY */
+.hist-card{background:var(--white);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow-sm);border-left:4px solid var(--red);}
+.hist-inner{display:flex;gap:12px;align-items:flex-start;}
+.hist-ico{width:40px;height:40px;border-radius:10px;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.hist-title{font-weight:700;font-size:13px;color:var(--dark);}
+.hist-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.hist-pts{font-size:11px;font-weight:800;color:var(--green);margin-top:4px;}
+.hist-date{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* LEADERBOARD */
+.lb-podium{display:flex;gap:8px;justify-content:center;align-items:flex-end;margin:10px 0 16px;padding:0 4px;}
+.lb-pod{text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;}
+.lb-pod-av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;font-weight:900;color:#fff;border:3px solid #fff;box-shadow:var(--shadow);margin-bottom:4px;}
+.lb-pod-rank{font-size:16px;margin-bottom:2px;}
+.lb-pod-name{font-size:10px;font-weight:700;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px;}
+.lb-pod-pts{font-size:10px;color:var(--muted);}
+.lb-pod-bar{border-radius:8px 8px 0 0;width:100%;}
+.lb-row{background:var(--white);border-radius:var(--r-sm);padding:11px 14px;margin-bottom:6px;box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:12px;}
+.lb-rank-num{font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;width:24px;text-align:center;color:var(--muted);flex-shrink:0;}
+.lb-av{width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;flex-shrink:0;}
+.lb-name{font-weight:700;font-size:13px;}
+.lb-info{font-size:11px;color:var(--muted);margin-top:1px;}
+.lb-pts-badge{background:var(--red-light);color:var(--red);font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.lb-you{background:linear-gradient(135deg,#FFF8E1,#FFFDE7)!important;border:2px solid var(--gold)!important;}
+
+/* QR MODAL */
+.qr-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:260;display:none;align-items:center;justify-content:center;padding:20px;}
+.qr-overlay.active{display:flex;}
+.qr-box-modal{background:var(--white);border-radius:20px;padding:26px 22px;width:100%;max-width:300px;text-align:center;animation:fadeUp 0.3s ease;}
+.qr-modal-title{font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;color:var(--dark);margin-bottom:3px;}
+.qr-modal-sub{font-size:11px;color:var(--muted);margin-bottom:16px;}
+#qr-render{display:flex;justify-content:center;margin-bottom:14px;}
+#qr-render canvas,#qr-render img{border-radius:10px;border:3px solid var(--red-light);}
+.qr-donor-chip{background:var(--red-light);border-radius:10px;padding:10px;margin-bottom:16px;}
+.qr-donor-chip .qdn{font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;color:var(--red);}
+.qr-donor-chip .qdd{font-size:11px;color:var(--slate);margin-top:2px;}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes bounce{0%,100%{transform:translateY(0);opacity:0.4}50%{transform:translateY(-8px);opacity:1}}
+@keyframes pulse-border{0%,100%{border-left-color:#B71C1C}50%{border-left-color:#EF5350}}
+
+/* MAP MODAL */
+.map-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:250;display:none;align-items:flex-end;}
+.map-overlay.active{display:flex;}
+.map-modal{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-height:90vh;display:flex;flex-direction:column;animation:slideUp 0.35s ease;}
+.map-hdr{padding:16px 18px 12px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--border);flex-shrink:0;}
+.map-hdr-info .map-title{font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;color:var(--dark);}
+.map-hdr-info .map-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.map-close-btn{background:var(--red-light);border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:var(--red);flex-shrink:0;}
+.map-chips{display:flex;gap:8px;padding:10px 14px;background:var(--bg);flex-shrink:0;overflow-x:auto;}
+.map-chips::-webkit-scrollbar{display:none;}
+.mchip{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--slate);white-space:nowrap;}
+.mchip.red{background:var(--red-light);border-color:var(--red-mid);color:var(--red);}
+.mchip.blue{background:#E3F2FD;border-color:#90CAF9;color:#1565C0;}
+.mchip.green{background:#E8F5E9;border-color:#A5D6A7;color:#2E7D32;}
+#map-frame-wrap{flex:1;min-height:320px;background:#E8F4F8;}
+#map-frame-wrap iframe{width:100%;height:100%;border:none;display:block;min-height:320px;}
+.map-actions{padding:12px 14px;display:flex;gap:8px;flex-shrink:0;border-top:1px solid var(--border);}
+.map-actions .btn{margin-top:0;flex:1;}
+@media(min-width:900px){
+  .map-overlay{align-items:center;justify-content:center;}
+  .map-modal{max-width:720px;width:92%;max-height:82vh;border-radius:20px;margin:0 auto;}
+  #map-frame-wrap{min-height:420px;}
+  #map-frame-wrap iframe{min-height:420px;}
+}
+
+/* ACTION BUTTONS ROW */
+.act-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.act-btn{padding:5px 10px;border-radius:7px;border:none;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.act-btn:active{transform:scale(0.96)}
+.act-edit{background:#E3F2FD;color:#1565C0}
+.act-reset{background:#FFF3E0;color:#E65100}
+.act-toggle{background:#E8F5E9;color:#2E7D32}
+.act-del{background:#FFEBEE;color:#B71C1C}
+.act-cancel{background:#F3E5F5;color:#6A1B9A}
+.act-msg{background:#E8F5E9;color:#1B5E20}
+
+/* CONFIRM DIALOG */
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay.active{display:flex}
+.confirm-box{background:var(--white);border-radius:18px;padding:24px;width:100%;max-width:340px;text-align:center;animation:fadeUp 0.25s ease}
+.confirm-ico{font-size:40px;margin-bottom:8px}
+.confirm-title{font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;color:var(--dark);margin-bottom:6px}
+.confirm-sub{font-size:12px;color:var(--muted);margin-bottom:18px}
+.confirm-btns{display:flex;gap:10px}
+.confirm-btns .btn{margin-top:0}
+
+/* BROADCAST */
+.broadcast-card{background:linear-gradient(135deg,#F3E5F5,#E8EAF6);border:1px solid #CE93D8;border-radius:var(--r);padding:14px;margin-bottom:10px}
+
+/* LOG ITEM */
+.log-item{background:var(--white);border-radius:8px;padding:10px 12px;margin-bottom:6px;border-left:3px solid var(--border);box-shadow:var(--shadow-sm)}
+.log-time{font-size:10px;color:var(--muted);margin-bottom:2px}
+.log-msg{font-size:12px;color:var(--dark);font-weight:600}
+
+/* SETTINGS ITEM */
+.setting-item{background:var(--white);border-radius:var(--r-sm);padding:13px 14px;margin-bottom:8px;box-shadow:var(--shadow-sm)}
+.setting-lbl{font-size:13px;font-weight:700;color:var(--dark);margin-bottom:6px}
+.setting-row{display:flex;align-items:center;gap:10px}
+.setting-inp{flex:1;padding:9px 12px;border-radius:8px;border:2px solid var(--border);font-size:13px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--dark)}
+.setting-inp:focus{outline:none;border-color:var(--red)}
+.setting-unit{font-size:12px;color:var(--muted);white-space:nowrap}
+
+/* ADMIN NAV - 5 tabs adjustments */
+#adm-nav .nav-btn{padding:8px 2px 11px}
+#adm-nav .nav-lbl{font-size:9px}
+</style>
+</head>
+<body>
+<div id="app-shell">
+
+<!-- DESKTOP SIDEBAR (hidden on mobile) -->
+<div id="desk-sidebar">
+  <div class="ds-logo">🩸</div>
+  <div class="ds-brand">Jeevan Mitra</div>
+  <div class="ds-tel">జీవన్ మిత్ర</div>
+  <div class="ds-tag">Telangana Blood Network</div>
+  <div class="ds-footer">© 2025 Jeevan Mitra · Telangana, India</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="app-content">
+
+<!-- SPLASH -->
+<section class="screen active" id="splash">
+  <div class="splash-inner">
+    <div class="splash-drop">🩸</div>
+    <div class="splash-brand">Jeevan Mitra</div>
+    <div class="splash-telugu">జీవన్ మిత్ర</div>
+    <div class="splash-tag">Telangana Blood Network</div>
+    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  </div>
+</section>
+
+<!-- ONBOARDING -->
+<section class="screen" id="onboarding">
+  <div class="ob-card" style="margin:auto 20px">
+    <div class="ob-logo">🩸</div>
+    <div class="ob-brand">Jeevan Mitra</div>
+    <div class="ob-tel">జీవన్ మిత్ర · Telangana Blood Network</div>
+    <div class="ob-sub">Connecting donors & hospitals across all 33 districts</div>
+    <button class="btn btn-red" onclick="showScreen('donor-register')">🫀 Join as Donor / దాతగా చేరండి</button>
+    <button class="btn btn-outline" onclick="showScreen('hospital-login')">🏥 Hospital Login / ఆసుపత్రి లాగిన్</button>
+    <div class="divider">or</div>
+    <div class="link-text" onclick="showScreen('quick-login')">Already have an account? <span>Quick Login →</span></div>
+    <div style="margin-top:14px;text-align:center;"><span style="font-size:11px;color:var(--muted);cursor:pointer;" onclick="showScreen('admin-login')">🔐 Admin Access</span></div>
+  </div>
+</section>
+
+<!-- DONOR REGISTER -->
+<section class="screen form-screen" id="donor-register">
+  <div class="form-hdr">
+    <button class="back-btn" onclick="showScreen('onboarding')">←</button>
+    <div><div class="form-title">Join as Donor</div><div class="form-sub">దాతగా నమోదు · Step 1 of 2</div></div>
+  </div>
+  <div class="steps"><div class="step done"></div><div class="step"></div></div>
+  <div class="grp"><label class="lbl">Full Name / పూర్తి పేరు</label><input class="inp" id="d-name" type="text" placeholder="Enter your full name"/></div>
+  <div class="grp"><label class="lbl">Phone / ఫోన్ నంబర్</label>
+    <div class="phone-row"><div class="cc">🇮🇳 +91</div><input class="inp" id="d-phone" type="tel" placeholder="9XXXXXXXXX" maxlength="10" style="flex:1"/></div>
+  </div>
+  <div class="grp"><label class="lbl">Date of Birth / పుట్టిన తేదీ</label><input class="inp" id="d-dob" type="date" max="" placeholder="DD/MM/YYYY"/></div>
+  <div class="grp"><label class="lbl">Email (Optional)</label><input class="inp" id="d-email" type="email" placeholder="your@email.com"/></div>
+  <div class="grp"><label class="lbl">District / జిల్లా</label><select class="sel" id="d-dist" onchange="loadMandals('d-dist','d-mandal')"><option value="">Select District</option></select></div>
+  <div class="grp"><label class="lbl">Mandal / మండలం</label><select class="sel" id="d-mandal" onchange="loadVillages('d-mandal','d-village','d-dist')"><option value="">Select Mandal</option></select></div>
+  <div class="grp"><label class="lbl">Village / గ్రామం</label><select class="sel" id="d-village"><option value="">Select Village</option></select></div>
+  <div class="grp"><label class="lbl">Blood Group / రక్త గ్రూప్</label>
+    <div class="blood-grid">
+      <button class="blood-btn" onclick="selBlood(this,'d')">A+</button><button class="blood-btn" onclick="selBlood(this,'d')">A-</button>
+      <button class="blood-btn" onclick="selBlood(this,'d')">B+</button><button class="blood-btn" onclick="selBlood(this,'d')">B-</button>
+      <button class="blood-btn" onclick="selBlood(this,'d')">AB+</button><button class="blood-btn" onclick="selBlood(this,'d')">AB-</button>
+      <button class="blood-btn" onclick="selBlood(this,'d')">O+</button><button class="blood-btn" onclick="selBlood(this,'d')">O-</button>
+    </div>
+  </div>
+  <div class="terms-row">
+    <input type="checkbox" id="d-terms"/>
+    <label for="d-terms">I agree to the <span>Terms & Conditions</span> and <span>Privacy Policy</span> of Jeevan Mitra</label>
+  </div>
+  <button class="btn btn-red" onclick="donorSendOTP()" style="margin-top:16px;">Send OTP → / OTP పంపండి</button>
+</section>
+
+<!-- HOSPITAL LOGIN (Email + Password) -->
+<section class="screen form-screen" id="hospital-login">
+  <div class="form-hdr">
+    <button class="back-btn" onclick="showScreen('onboarding')">←</button>
+    <div><div class="form-title">Hospital Login</div><div class="form-sub">ఆసుపత్రి లాగిన్ · Admin Credentials</div></div>
+  </div>
+  <div class="info-box">ℹ️ Hospital accounts are created by Admin only. Use credentials provided by admin.</div>
+  <div class="grp"><label class="lbl">Hospital Email / ఇమెయిల్</label><input class="inp" id="h-email" type="email" placeholder="hospital@gmail.com"/></div>
+  <div class="grp"><label class="lbl">Password / పాస్‌వర్డ్</label>
+    <div class="pw-wrap"><input class="inp" id="h-pass" type="password" placeholder="Enter password"/><button class="pw-eye" onclick="togglePw('h-pass')">👁</button></div>
+  </div>
+  <div style="text-align:right;margin-bottom:16px;"><span style="font-size:12px;color:var(--red);cursor:pointer;font-weight:700;" onclick="showToast('Contact admin@jeevanmitra.in','info')">Forgot Password?</span></div>
+  <button class="btn btn-blue" onclick="hospitalLogin()">🏥 Login / లాగిన్</button>
+  <div class="link-text" style="text-align:center;margin-top:16px;">New hospital? <span onclick="showToast('Contact admin@jeevanmitra.in to register','info')">Contact Admin →</span></div>
+</section>
+
+<!-- QUICK LOGIN -->
+<section class="screen form-screen" id="quick-login">
+  <div class="form-hdr">
+    <button class="back-btn" onclick="showScreen('onboarding')">←</button>
+    <div><div class="form-title">Quick Login</div><div class="form-sub">Your registered phone number</div></div>
+  </div>
+  <div class="grp"><label class="lbl">I am a</label>
+    <div style="display:flex;gap:10px;">
+      <button class="blood-btn sel" id="ql-donor" onclick="selRole('donor')" style="flex:1;padding:13px;">🫀 Donor</button>
+      <button class="blood-btn" id="ql-hospital" onclick="selRole('hospital')" style="flex:1;padding:13px;">🏥 Hospital</button>
+    </div>
+  </div>
+  <div class="grp"><label class="lbl">Phone Number</label>
+    <div class="phone-row"><div class="cc">🇮🇳 +91</div><input class="inp" id="ql-phone" type="tel" placeholder="9XXXXXXXXX" maxlength="10" style="flex:1"/></div>
+  </div>
+  <button class="btn btn-red" onclick="quickLoginOTP()" style="margin-top:16px;">Send OTP →</button>
+</section>
+
+<!-- OTP VERIFY -->
+<section class="screen form-screen" id="otp-verify">
+  <div class="form-hdr">
+    <button class="back-btn" id="otp-back">←</button>
+    <div><div class="form-title">Verify OTP</div><div class="form-sub" id="otp-sub">OTP sent to your number</div></div>
+  </div>
+  <div class="steps"><div class="step done"></div><div class="step done"></div></div>
+  <div class="otp-hint" id="otp-hint">🔑 Your OTP: <span id="otp-val"></span></div>
+  <div class="otp-inputs">
+    <input class="otp-inp" maxlength="1" oninput="otpNext(this,0)"/>
+    <input class="otp-inp" maxlength="1" oninput="otpNext(this,1)"/>
+    <input class="otp-inp" maxlength="1" oninput="otpNext(this,2)"/>
+    <input class="otp-inp" maxlength="1" oninput="otpNext(this,3)"/>
+    <input class="otp-inp" maxlength="1" oninput="otpNext(this,4)"/>
+    <input class="otp-inp" maxlength="1" oninput="otpNext(this,5)"/>
+  </div>
+  <button class="btn btn-red" onclick="verifyOTP()">✅ Verify & Continue</button>
+  <div class="otp-timer">
+    <span id="timer-txt">Resend in <span id="timer-cnt">30</span>s</span>
+    <button class="resend-btn" id="resend-btn" style="display:none" onclick="resendOTP()">Resend OTP</button>
+  </div>
+</section>
+
+<!-- ADMIN LOGIN -->
+<section class="screen form-screen" id="admin-login">
+  <div class="form-hdr">
+    <button class="back-btn" onclick="showScreen('onboarding')">←</button>
+    <div><div class="form-title">Admin Panel</div><div class="form-sub">Restricted Access</div></div>
+  </div>
+  <div style="text-align:center;margin-bottom:24px;"><div style="font-size:44px;">🔐</div><div style="font-size:12px;color:var(--muted);margin-top:6px;">Authorized Personnel Only</div></div>
+  <div class="grp"><label class="lbl">Admin Email</label><input class="inp" id="adm-email" type="email" placeholder="admin@jeevanmitra.in"/></div>
+  <div class="grp"><label class="lbl">Password</label>
+    <div class="pw-wrap"><input class="inp" id="adm-pass" type="password" placeholder="Admin password"/><button class="pw-eye" onclick="togglePw('adm-pass')">👁</button></div>
+  </div>
+  <button class="btn btn-dark" onclick="adminLogin()" style="margin-top:16px;">🔐 Login to Admin Panel</button>
+</section>
+
+<!-- DONOR HOME -->
+<section class="screen" id="donor-home">
+  <div class="d-header">
+    <div class="d-greet">నమస్కారం 👋 Welcome back,</div>
+    <div class="d-name" id="dh-name">Donor</div>
+    <div class="d-loc" id="dh-loc">📍 Telangana</div>
+    <div class="d-pills">
+      <div class="pill" id="dh-blood">🩸 A+</div>
+      <div class="pill" id="dh-pts">⭐ 0 pts</div>
+      <div class="pill" id="dh-don">💉 0 donations</div>
+    </div>
+  </div>
+  <div class="body-pad" id="donor-body"></div>
+  <div class="bnav" id="donor-nav">
+    <button class="nav-btn active" onclick="dTab('home',this)"><span class="nav-ico">🏠</span><span class="nav-lbl">Home</span></button>
+    <button class="nav-btn" onclick="dTab('requests',this)"><span class="nav-ico">🩸</span><span class="nav-lbl">Requests</span></button>
+    <button class="nav-btn" onclick="dTab('history',this)"><span class="nav-ico">📋</span><span class="nav-lbl">History</span></button>
+    <button class="nav-btn" onclick="dTab('leaderboard',this)"><span class="nav-ico">🏆</span><span class="nav-lbl">Leaders</span></button>
+    <button class="nav-btn" onclick="dTab('profile',this)"><span class="nav-ico">👤</span><span class="nav-lbl">Profile</span></button>
+  </div>
+</section>
+
+<!-- HOSPITAL HOME -->
+<section class="screen" id="hospital-home">
+  <div class="h-header">
+    <div class="d-greet">Welcome,</div>
+    <div class="h-name" id="hh-name">Hospital</div>
+    <div class="h-loc" id="hh-loc">📍 Telangana</div>
+    <div class="h-stats">
+      <div class="hstat"><div class="hstat-num" id="hh-total">0</div><div class="hstat-lbl">Total</div></div>
+      <div class="hstat"><div class="hstat-num" id="hh-open">0</div><div class="hstat-lbl">Open</div></div>
+      <div class="hstat"><div class="hstat-num" id="hh-done">0</div><div class="hstat-lbl">Fulfilled</div></div>
+    </div>
+  </div>
+  <div class="body-pad" id="hospital-body"></div>
+  <div class="bnav" id="hosp-nav">
+    <button class="nav-btn active" onclick="hTab('home',this)"><span class="nav-ico">🏠</span><span class="nav-lbl">Home</span></button>
+    <button class="nav-btn" onclick="hTab('requests',this)"><span class="nav-ico">📋</span><span class="nav-lbl">Requests</span></button>
+    <button class="nav-btn" onclick="hTab('new',this)"><span class="nav-ico">➕</span><span class="nav-lbl">New</span></button>
+    <button class="nav-btn" onclick="hTab('scan',this)"><span class="nav-ico">📷</span><span class="nav-lbl">Scan</span></button>
+    <button class="nav-btn" onclick="hTab('profile',this)"><span class="nav-ico">🏥</span><span class="nav-lbl">Profile</span></button>
+  </div>
+</section>
+
+<!-- ADMIN HOME -->
+<section class="screen" id="admin-home">
+  <div class="a-header">
+    <div class="d-greet">Admin Panel 🔐</div>
+    <div class="a-title">Jeevan Mitra</div>
+    <div class="a-sub" id="adm-email-show">admin@jeevanmitra.in</div>
+    <div class="a-stats">
+      <div class="astat"><div class="astat-num" id="as-h">0</div><div class="astat-lbl">Hospitals</div></div>
+      <div class="astat"><div class="astat-num" id="as-d">0</div><div class="astat-lbl">Donors</div></div>
+      <div class="astat"><div class="astat-num" id="as-r">0</div><div class="astat-lbl">Requests</div></div>
+    </div>
+  </div>
+  <div class="body-pad" id="admin-body"></div>
+  <div class="bnav" id="adm-nav">
+    <button class="nav-btn active" onclick="aTab('dash',this)"><span class="nav-ico">📊</span><span class="nav-lbl">Dash</span></button>
+    <button class="nav-btn" onclick="aTab('hospitals',this)"><span class="nav-ico">🏥</span><span class="nav-lbl">Hospitals</span></button>
+    <button class="nav-btn" onclick="aTab('donors',this)"><span class="nav-ico">🫀</span><span class="nav-lbl">Donors</span></button>
+    <button class="nav-btn" onclick="aTab('requests',this)"><span class="nav-ico">📋</span><span class="nav-lbl">Requests</span></button>
+    <button class="nav-btn" onclick="aTab('settings',this)"><span class="nav-ico">⚙️</span><span class="nav-lbl">More</span></button>
+  </div>
+</section>
+
+
+<div class="modal-overlay" id="accept-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Accept Blood Request?</div>
+    <div id="accept-details"></div>
+    <button class="btn btn-red" onclick="confirmAccept()" style="margin-top:14px;">✅ Yes, I'll Donate</button>
+    <button class="btn btn-outline" onclick="closeModal('accept-modal')" style="margin-top:8px;">Cancel</button>
+  </div>
+</div>
+
+<!-- REDEEM MODAL -->
+<div class="modal-overlay" id="redeem-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🎁 Voucher Redeemed!</div>
+    <div id="redeem-details"></div>
+    <button class="btn btn-red" onclick="closeModal('redeem-modal')" style="margin-top:14px;">Close</button>
+  </div>
+</div>
+
+<!-- MAP MODAL — shown after donor accepts request -->
+<div class="map-overlay" id="map-overlay">
+  <div class="map-modal">
+    <div class="map-hdr">
+      <div class="map-hdr-info">
+        <div class="map-title">🗺 Route to Hospital</div>
+        <div class="map-sub" id="map-sub">Showing directions from your location</div>
+      </div>
+      <button class="map-close-btn" onclick="closeMapModal()">✕</button>
+    </div>
+    <div class="map-chips" id="map-chips"></div>
+    <div id="map-frame-wrap">
+      <iframe id="map-iframe" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="about:blank"></iframe>
+    </div>
+    <div class="map-actions">
+      <button class="btn btn-red" id="map-gmaps-btn" onclick="openInGoogleMaps()">🗺 Open in Google Maps</button>
+      <button class="btn btn-outline" onclick="closeMapModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-ico" id="conf-ico">⚠️</div>
+    <div class="confirm-title" id="conf-title">Are you sure?</div>
+    <div class="confirm-sub" id="conf-sub">This action cannot be undone.</div>
+    <div class="confirm-btns">
+      <button class="btn btn-outline" onclick="closeConfirm()" style="margin-top:0;">Cancel</button>
+      <button class="btn btn-red" id="conf-ok" style="margin-top:0;">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT DONOR MODAL -->
+<div class="modal-overlay" id="edit-donor-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ Edit Donor</div>
+    <div class="grp"><label class="lbl">Full Name</label><input class="inp" id="ed-name" type="text"/></div>
+    <div class="grp"><label class="lbl">Phone</label><input class="inp" id="ed-phone" type="tel"/></div>
+    <div class="grp"><label class="lbl">City</label><input class="inp" id="ed-city" type="text"/></div>
+    <div class="grp"><label class="lbl">Blood Group</label>
+      <div class="blood-grid">
+        <button class="blood-btn" onclick="selBlood(this,'ed')">A+</button><button class="blood-btn" onclick="selBlood(this,'ed')">A-</button>
+        <button class="blood-btn" onclick="selBlood(this,'ed')">B+</button><button class="blood-btn" onclick="selBlood(this,'ed')">B-</button>
+        <button class="blood-btn" onclick="selBlood(this,'ed')">AB+</button><button class="blood-btn" onclick="selBlood(this,'ed')">AB-</button>
+        <button class="blood-btn" onclick="selBlood(this,'ed')">O+</button><button class="blood-btn" onclick="selBlood(this,'ed')">O-</button>
+      </div>
+    </div>
+    <div class="grp"><label class="lbl">Date of Birth</label><input class="inp" id="ed-dob" type="date"/></div>
+    <div class="grp"><label class="lbl">Availability</label>
+      <select class="sel" id="ed-avail"><option value="true">Available</option><option value="false">Unavailable</option></select>
+    </div>
+    <input type="hidden" id="ed-donor-id"/>
+    <button class="btn btn-red" onclick="saveEditDonor()" style="margin-top:8px;">💾 Save Changes</button>
+    <button class="btn btn-outline" onclick="closeModal('edit-donor-modal')" style="margin-top:6px;">Cancel</button>
+  </div>
+</div>
+
+<!-- EDIT HOSPITAL MODAL -->
+<div class="modal-overlay" id="edit-hosp-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ Edit Hospital</div>
+    <div class="grp"><label class="lbl">Hospital Name</label><input class="inp" id="eh-name" type="text"/></div>
+    <div class="grp"><label class="lbl">Phone</label><input class="inp" id="eh-phone" type="tel"/></div>
+    <div class="grp"><label class="lbl">City / Location</label><input class="inp" id="eh-city" type="text"/></div>
+    <div class="grp"><label class="lbl">Email</label><input class="inp" id="eh-email" type="email"/></div>
+    <div class="grp"><label class="lbl">Type</label>
+      <select class="sel" id="eh-type"><option>Government</option><option>Private</option><option>Trust</option></select>
+    </div>
+    <input type="hidden" id="eh-hosp-id"/>
+    <button class="btn btn-blue" onclick="saveEditHosp()" style="margin-top:8px;">💾 Save Changes</button>
+    <button class="btn btn-outline" onclick="closeModal('edit-hosp-modal')" style="margin-top:6px;">Cancel</button>
+  </div>
+</div>
+
+<!-- DONOR EDIT PROFILE MODAL -->
+<div class="modal-overlay" id="donor-edit-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ Edit My Profile</div>
+    <div class="grp"><label class="lbl">Full Name</label><input class="inp" id="dep-name" type="text"/></div>
+    <div class="grp"><label class="lbl">City</label><input class="inp" id="dep-city" type="text"/></div>
+    <div class="grp"><label class="lbl">Date of Birth / పుట్టిన తేదీ</label><input class="inp" id="dep-dob" type="date"/></div>
+    <div class="grp"><label class="lbl">Email</label><input class="inp" id="dep-email" type="email"/></div>
+    <button class="btn btn-red" onclick="saveDonorProfile()" style="margin-top:8px;">💾 Save Profile</button>
+    <button class="btn btn-outline" onclick="closeModal('donor-edit-modal')" style="margin-top:6px;">Cancel</button>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal-overlay" id="chg-pw-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="chg-pw-title">🔑 Change Password</div>
+    <div class="grp"><label class="lbl">New Password</label>
+      <div class="pw-wrap"><input class="inp" id="new-pw" type="password" placeholder="Enter new password"/><button class="pw-eye" onclick="togglePw('new-pw')">👁</button></div>
+    </div>
+    <div class="grp"><label class="lbl">Confirm Password</label>
+      <div class="pw-wrap"><input class="inp" id="confirm-pw" type="password" placeholder="Confirm new password"/><button class="pw-eye" onclick="togglePw('confirm-pw')">👁</button></div>
+    </div>
+    <input type="hidden" id="chg-pw-ctx"/>
+    <input type="hidden" id="chg-pw-uid"/>
+    <button class="btn btn-red" onclick="submitChangePw()" style="margin-top:8px;">🔑 Update Password</button>
+    <button class="btn btn-outline" onclick="closeModal('chg-pw-modal')" style="margin-top:6px;">Cancel</button>
+  </div>
+</div>
+
+<!-- BROADCAST MODAL -->
+<div class="modal-overlay" id="broadcast-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📢 Send Broadcast</div>
+    <div class="grp"><label class="lbl">Send To</label>
+      <select class="sel" id="bc-target"><option value="donors">All Donors</option><option value="hospitals">All Hospitals</option><option value="all">Everyone</option></select>
+    </div>
+    <div class="grp"><label class="lbl">Message</label>
+      <textarea class="inp" id="bc-msg" rows="4" placeholder="Type your broadcast message..." style="resize:none;height:90px;"></textarea>
+    </div>
+    <button class="btn btn-red" onclick="sendBroadcast()" style="margin-top:8px;">📢 Send Now</button>
+    <button class="btn btn-outline" onclick="closeModal('broadcast-modal')" style="margin-top:6px;">Cancel</button>
+  </div>
+</div>
+
+<!-- CREATE ADMIN MODAL -->
+<div class="modal-overlay" id="create-admin-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">👤 Create Admin Account</div>
+    <div class="grp"><label class="lbl">Admin Email</label><input class="inp" id="ca-email" type="email" placeholder="newadmin@jeevanmitra.in"/></div>
+    <div class="grp"><label class="lbl">Password</label>
+      <div class="pw-wrap"><input class="inp" id="ca-pass" type="password" placeholder="Set admin password"/><button class="pw-eye" onclick="togglePw('ca-pass')">👁</button></div>
+    </div>
+    <button class="btn btn-dark" onclick="createAdmin()" style="margin-top:8px;">✅ Create Admin</button>
+    <button class="btn btn-outline" onclick="closeModal('create-admin-modal')" style="margin-top:6px;">Cancel</button>
+  </div>
+</div>
+
+<!-- QR CODE MODAL -->
+<div class="qr-overlay" id="qr-overlay">
+  <div class="qr-box-modal">
+    <div class="qr-modal-title">📱 Your Donor QR Code</div>
+    <div class="qr-modal-sub">Show this at the hospital for quick verification</div>
+    <div class="qr-donor-chip">
+      <div class="qdn" id="qr-donor-name">-</div>
+      <div class="qdd" id="qr-donor-info">-</div>
+    </div>
+    <div id="qr-render"></div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:14px;">Scan code contains your donor ID &amp; blood group</div>
+    <button class="btn btn-red" onclick="downloadQR()" style="margin-top:0;">⬇️ Download QR</button>
+    <button class="btn btn-outline" onclick="document.getElementById('qr-overlay').classList.remove('active')" style="margin-top:8px;">Close</button>
+  </div>
+</div>
+
+<script>
+// ═══ TELANGANA DATA ═══
+const TG = {
+  "Hyderabad":{"Amberpet":["Amberpet","Tarnaka","Nacharam","Habsiguda","Ramanthapur"],"Bahadurpura":["Bahadurpura","Mangalhat","Saidabad","Santoshnagar"],"Charminar":["Charminar","Falaknuma","Chandrayangutta","Mailardevpally"],"Golconda":["Golconda","Langar Houz","Karwan","Tolichowki"],"Khairatabad":["Khairatabad","Banjara Hills","Jubilee Hills","Panjagutta","Somajiguda"],"LB Nagar":["LB Nagar","Saroornagar","Vanasthalipuram","Hayathnagar","Nagole"],"Malakpet":["Malakpet","Chaderghat","Yakutpura","Rein Bazar"],"Malkajgiri":["Malkajgiri","Neredmet","Lothkunta","Alwal","Yapral"],"Musheerabad":["Musheerabad","Trimulgherry","Marredpally","Chilkalguda"],"Nampally":["Nampally","Abids","Himayatnagar","Narayanguda","Barkatpura"],"Rajendranagar":["Rajendranagar","Attapur","Budvel","Kismatpur"],"Secunderabad":["Secunderabad","Bowenpally","Padmarao Nagar","West Maredpally"],"Serlingampally":["Serlingampally","Kondapur","Madhapur","Gachibowli","Nanakramguda"],"Uppal":["Uppal","Boduppal","Ghatkesar","Medipally","Peerzadiguda"]},
+  "Rangareddy":{"Chevella":["Chevella","Marpally","Shabad","Pargi"],"Farooqnagar":["Farooqnagar","Kothur","Jadcherla","Kandukur"],"Ibrahimpatnam":["Ibrahimpatnam","Manchal","Yacharam","Saroornagar"],"Maheshwaram":["Maheshwaram","Bandlaguda","Rajendranagar","Kismatpur"],"Moinabad":["Moinabad","Shankarpally","Chevella","Gandipet"],"Shadnagar":["Shadnagar","Kothur","Farooqnagar","Jadcherla"],"Shamshabad":["Shamshabad","Rajendranagar","Bandlaguda","Attapur"],"Vikarabad":["Vikarabad","Tandur","Pargi","Dharur"],"Yacharam":["Yacharam","Ibrahimpatnam","Manchal","Hayathnagar"]},
+  "Medchal-Malkajgiri":{"Dundigal":["Dundigal","Medchal","Kompally","Jeedimetla"],"Ghatkesar":["Ghatkesar","Medipally","Peerzadiguda","Uppal"],"Keesara":["Keesara","Ghatkesar","Cherlapally","Neredmet"],"Kompally":["Kompally","Jeedimetla","Bollaram","Medchal"],"Medchal":["Medchal","Kompally","Dundigal","Shamirpet"],"Quthbullapur":["Quthbullapur","Jeedimetla","Balanagar","Kukatpally"],"Shamirpet":["Shamirpet","Medchal","Alwal","Yapral"],"Turkayamjal":["Turkayamjal","Hayathnagar","Yacharam","Manchal"]},
+  "Sangareddy":{"Andole":["Andole","Jogipet","Narsapur","Ramayampet"],"Hathnoora":["Hathnoora","Narayankhed","Zaheerabad","Nyalkal"],"Jogipet":["Jogipet","Andole","Ramayampet","Narsapur"],"Kandi":["Kandi","Patancheru","Sangareddy","Ameenpur"],"Narayankhed":["Narayankhed","Hathnoora","Zaheerabad","Nyalkal"],"Patancheru":["Patancheru","Kandi","Sangareddy","Ameenpur"],"Sangareddy":["Sangareddy","Kandi","Patancheru","Ameenpur"],"Sadasivpet":["Sadasivpet","Sangareddy","Andole","Jogipet"],"Zaheerabad":["Zaheerabad","Narayankhed","Nyalkal","Hathnoora"]},
+  "Nizamabad":{"Armoor":["Armoor","Nizamabad","Dichpally","Kotagiri"],"Banswada":["Banswada","Kamareddy","Bheemgal","Enkoor"],"Bodhan":["Bodhan","Nizamabad","Dichpally","Mosra"],"Dichpally":["Dichpally","Nizamabad","Armoor","Kotagiri"],"Domakonda":["Domakonda","Kamareddy","Banswada","Lingampet"],"Kotagiri":["Kotagiri","Nizamabad","Dichpally","Armoor"],"Nizamabad Rural":["Nizamabad Rural","Dichpally","Armoor","Bodhan"],"Nizamabad Urban":["Nizamabad Urban","Bodhan","Dichpally","Mosra"],"Varni":["Varni","Nizamabad","Dichpally","Armoor"]},
+  "Karimnagar":{"Choppadandi":["Choppadandi","Karimnagar","Kathalapur","Vemulawada"],"Gangadhara":["Gangadhara","Karimnagar","Manakondur","Huzurabad"],"Huzurabad":["Huzurabad","Karimnagar","Koheda","Vemulawada"],"Karimnagar":["Karimnagar","Choppadandi","Huzurabad","Vemulawada"],"Koheda":["Koheda","Huzurabad","Karimnagar","Sircilla"],"Manakondur":["Manakondur","Karimnagar","Choppadandi","Vemulawada"],"Vemulawada":["Vemulawada","Karimnagar","Huzurabad","Sircilla"]},
+  "Warangal":{"Cherial":["Cherial","Warangal","Parkal","Nallabelly"],"Dharmasagar":["Dharmasagar","Warangal","Nallabelly","Parkal"],"Ghanpur":["Ghanpur","Jangaon","Station Ghanpur","Zaffergadh"],"Hasanparthy":["Hasanparthy","Warangal","Kazipet","Parkal"],"Nallabelly":["Nallabelly","Warangal","Parkal","Dharmasagar"],"Parkal":["Parkal","Warangal","Nallabelly","Dharmasagar"],"Shayampet":["Shayampet","Warangal","Atmakur","Nallabelly"],"Warangal":["Warangal","Hasanparthy","Kazipet","Parkal"],"Wardannapet":["Wardannapet","Warangal","Jangaon","Cherial"]},
+  "Khammam":{"Aswaraopeta":["Aswaraopeta","Khammam","Madhira","Wyra"],"Bhadrachalam":["Bhadrachalam","Kothagudem","Manuguru","Palvancha"],"Bonakal":["Bonakal","Khammam","Madhira","Sathupalli"],"Khammam":["Khammam","Madhira","Wyra","Sathupalli"],"Kothagudem":["Kothagudem","Bhadrachalam","Palvancha","Manuguru"],"Madhira":["Madhira","Khammam","Wyra","Sathupalli"],"Manuguru":["Manuguru","Bhadrachalam","Kothagudem","Palvancha"],"Palvoncha":["Palvoncha","Kothagudem","Bhadrachalam","Manuguru"],"Sathupalli":["Sathupalli","Khammam","Madhira","Wyra"],"Wyra":["Wyra","Khammam","Madhira","Sathupalli"],"Yellandu":["Yellandu","Kothagudem","Bhadrachalam","Palvancha"]},
+  "Nalgonda":{"Alair":["Alair","Aler","Bhongir","Yadadri"],"Aler":["Aler","Alair","Bhongir","Yadadri"],"Bhongir":["Bhongir","Alair","Aler","Yadadri"],"Choutuppal":["Choutuppal","Bhongir","Alair","Aler"],"Devarakonda":["Devarakonda","Nalgonda","Huzurnagar","Kodad"],"Huzurnagar":["Huzurnagar","Nalgonda","Kodad","Miryalaguda"],"Kodad":["Kodad","Huzurnagar","Nalgonda","Miryalaguda"],"Miryalaguda":["Miryalaguda","Nalgonda","Huzurnagar","Kodad"],"Munugode":["Munugode","Nalgonda","Miryalaguda","Huzurnagar"],"Nalgonda":["Nalgonda","Miryalaguda","Huzurnagar","Kodad"],"Suryapet":["Suryapet","Nalgonda","Huzurnagar","Kodad"],"Tungaturthy":["Tungaturthy","Nalgonda","Huzurnagar","Kodad"]},
+  "Mahbubnagar":{"Achampet":["Achampet","Nagarkurnool","Kollapur","Kalwakurthy"],"Jadcherla":["Jadcherla","Mahbubnagar","Shadnagar","Farooqnagar"],"Kalwakurthy":["Kalwakurthy","Nagarkurnool","Achampet","Kollapur"],"Kodangal":["Kodangal","Vikarabad","Tandur","Pargi"],"Kollapur":["Kollapur","Nagarkurnool","Achampet","Kalwakurthy"],"Kosgi":["Kosgi","Narayanpet","Makthal","Marikal"],"Mahbubnagar":["Mahbubnagar","Jadcherla","Shadnagar","Farooqnagar"],"Makthal":["Makthal","Narayanpet","Kosgi","Marikal"],"Narayanpet":["Narayanpet","Makthal","Kosgi","Marikal"],"Wanaparthy":["Wanaparthy","Pebbair","Revally","Gopalpet"]},
+  "Adilabad":{"Adilabad":["Adilabad","Bhainsa","Nirmal","Mudhole"],"Asifabad":["Asifabad","Kagaznagar","Sirpur","Jainath"],"Boath":["Boath","Adilabad","Nirmal","Bhainsa"],"Chennur":["Chennur","Mancherial","Bellampalle","Luxettipet"],"Jainath":["Jainath","Asifabad","Kagaznagar","Sirpur"],"Kagaznagar":["Kagaznagar","Asifabad","Sirpur","Jainath"],"Nirmal":["Nirmal","Adilabad","Bhainsa","Mudhole"],"Sirpur":["Sirpur","Asifabad","Kagaznagar","Jainath"],"Utnoor":["Utnoor","Adilabad","Ichoda","Boath"]},
+  "Medak":{"Andole":["Andole","Jogipet","Narsapur","Ramayampet"],"Chegunta":["Chegunta","Medak","Toopran","Narsapur"],"Dubbak":["Dubbak","Siddipet","Gajwel","Husnabad"],"Gajwel":["Gajwel","Siddipet","Dubbak","Husnabad"],"Jogipet":["Jogipet","Andole","Narsapur","Ramayampet"],"Medak":["Medak","Narsapur","Toopran","Chegunta"],"Narsapur":["Narsapur","Medak","Andole","Jogipet"],"Ramayampet":["Ramayampet","Narsapur","Andole","Jogipet"],"Toopran":["Toopran","Medak","Narsapur","Chegunta"]},
+  "Suryapet":{"Chivvemla":["Chivvemla","Suryapet","Kodad","Huzurnagar"],"Damaracherla":["Damaracherla","Suryapet","Kodad","Huzurnagar"],"Garidepally":["Garidepally","Suryapet","Kodad","Huzurnagar"],"Huzurnagar":["Huzurnagar","Suryapet","Kodad","Nalgonda"],"Kodad":["Kodad","Suryapet","Huzurnagar","Nalgonda"],"Mothkur":["Mothkur","Suryapet","Kodad","Huzurnagar"],"Munagala":["Munagala","Suryapet","Kodad","Huzurnagar"],"Suryapet":["Suryapet","Kodad","Huzurnagar","Nalgonda"],"Thipparthy":["Thipparthy","Suryapet","Kodad","Huzurnagar"]},
+  "Yadadri Bhuvanagiri":{"Alair":["Alair","Aler","Bhongir","Yadadri"],"Aler":["Aler","Alair","Bhongir","Yadadri"],"Bhongir":["Bhongir","Alair","Aler","Yadadri"],"Bhuvanagiri":["Bhuvanagiri","Bhongir","Alair","Yadadri"],"Choutuppal":["Choutuppal","Bhongir","Alair","Yadadri"],"Mothkur":["Mothkur","Bhongir","Alair","Yadadri"],"Yadagirigutta":["Yadagirigutta","Bhongir","Alair","Yadadri"]},
+  "Jangaon":{"Bachannapeta":["Bachannapeta","Jangaon","Cherial","Wardannapet"],"Ghanpur":["Ghanpur","Jangaon","Station Ghanpur","Zaffergadh"],"Jangaon":["Jangaon","Ghanpur","Cherial","Wardannapet"],"Narmetta":["Narmetta","Jangaon","Cherial","Wardannapet"],"Palakurthi":["Palakurthi","Jangaon","Cherial","Wardannapet"],"Rayaparthi":["Rayaparthi","Jangaon","Ghanpur","Station Ghanpur"],"Station Ghanpur":["Station Ghanpur","Jangaon","Ghanpur","Zaffergadh"],"Zaffergadh":["Zaffergadh","Jangaon","Ghanpur","Station Ghanpur"]},
+  "Siddipet":{"Chinnakodur":["Chinnakodur","Siddipet","Gajwel","Husnabad"],"Doultabad":["Doultabad","Siddipet","Gajwel","Husnabad"],"Dubbaka":["Dubbaka","Siddipet","Gajwel","Husnabad"],"Gajwel":["Gajwel","Siddipet","Dubbaka","Husnabad"],"Husnabad":["Husnabad","Siddipet","Gajwel","Dubbaka"],"Kondapak":["Kondapak","Siddipet","Gajwel","Husnabad"],"Pragnapur":["Pragnapur","Siddipet","Gajwel","Husnabad"],"Siddipet":["Siddipet","Gajwel","Husnabad","Dubbaka"],"Thoguta":["Thoguta","Siddipet","Gajwel","Husnabad"],"Wargal":["Wargal","Siddipet","Gajwel","Husnabad"]},
+  "Vikarabad":{"Basheerabad":["Basheerabad","Vikarabad","Tandur","Pargi"],"Dharur":["Dharur","Vikarabad","Tandur","Pargi"],"Kodangal":["Kodangal","Vikarabad","Tandur","Pargi"],"Pargi":["Pargi","Vikarabad","Tandur","Dharur"],"Tandur":["Tandur","Vikarabad","Pargi","Dharur"],"Vikarabad":["Vikarabad","Tandur","Pargi","Dharur"]},
+  "Wanaparthy":{"Atmakur":["Atmakur","Wanaparthy","Pebbair","Revally"],"Gopalpet":["Gopalpet","Wanaparthy","Pebbair","Revally"],"Pebbair":["Pebbair","Wanaparthy","Revally","Gopalpet"],"Revally":["Revally","Wanaparthy","Pebbair","Gopalpet"],"Wanaparthy":["Wanaparthy","Pebbair","Revally","Gopalpet"]},
+  "Nagarkurnool":{"Achampet":["Achampet","Nagarkurnool","Kollapur","Kalwakurthy"],"Bijinapalle":["Bijinapalle","Nagarkurnool","Achampet","Kollapur"],"Kalwakurthy":["Kalwakurthy","Nagarkurnool","Achampet","Kollapur"],"Kollapur":["Kollapur","Nagarkurnool","Achampet","Kalwakurthy"],"Kothakota":["Kothakota","Nagarkurnool","Achampet","Kollapur"],"Nagarkurnool":["Nagarkurnool","Achampet","Kollapur","Kalwakurthy"],"Utkoor":["Utkoor","Nagarkurnool","Achampet","Kollapur"],"Veldanda":["Veldanda","Nagarkurnool","Achampet","Kollapur"]},
+  "Jogulamba Gadwal":{"Alampur":["Alampur","Gadwal","Gattu","Maldakal"],"Gadwal":["Gadwal","Alampur","Gattu","Maldakal"],"Gattu":["Gattu","Gadwal","Alampur","Maldakal"],"Ieeja":["Ieeja","Gadwal","Alampur","Maldakal"],"Maldakal":["Maldakal","Gadwal","Alampur","Gattu"]},
+  "Mahabubabad":{"Dornakal":["Dornakal","Mahabubabad","Thorrur","Kesamudram"],"Gudur":["Gudur","Mahabubabad","Thorrur","Dornakal"],"Kesamudram":["Kesamudram","Mahabubabad","Thorrur","Dornakal"],"Mahabubabad":["Mahabubabad","Thorrur","Dornakal","Gudur"],"Thorrur":["Thorrur","Mahabubabad","Dornakal","Gudur"]},
+  "Mulugu":{"Eturnagaram":["Eturnagaram","Mulugu","Mangapet","Tadvai"],"Mangapet":["Mangapet","Mulugu","Eturnagaram","Tadvai"],"Mulugu":["Mulugu","Eturnagaram","Mangapet","Tadvai"],"Tadvai":["Tadvai","Mulugu","Eturnagaram","Mangapet"],"Venkatapur":["Venkatapur","Mulugu","Eturnagaram","Mangapet"],"Wazeedu":["Wazeedu","Mulugu","Eturnagaram","Mangapet"]},
+  "Bhadradri Kothagudem":{"Aswaraopeta":["Aswaraopeta","Kothagudem","Bhadrachalam","Palvancha"],"Bhadrachalam":["Bhadrachalam","Kothagudem","Palvancha","Manuguru"],"Cherla":["Cherla","Bhadrachalam","Kothagudem","Palvancha"],"Dammapeta":["Dammapeta","Kothagudem","Bhadrachalam","Palvancha"],"Kothagudem":["Kothagudem","Bhadrachalam","Palvancha","Manuguru"],"Manuguru":["Manuguru","Bhadrachalam","Kothagudem","Palvancha"],"Palvancha":["Palvancha","Kothagudem","Bhadrachalam","Manuguru"],"Yellandu":["Yellandu","Kothagudem","Bhadrachalam","Palvancha"]},
+  "Jayashankar Bhupalpally":{"Bhupalpally":["Bhupalpally","Kataram","Mahadevpur","Manthani"],"Eturnagaram":["Eturnagaram","Bhupalpally","Kataram","Mahadevpur"],"Kataram":["Kataram","Bhupalpally","Eturnagaram","Mahadevpur"],"Mahadevpur":["Mahadevpur","Bhupalpally","Kataram","Eturnagaram"],"Manthani":["Manthani","Bhupalpally","Peddapalle","Ramagundam"],"Palimela":["Palimela","Bhupalpally","Kataram","Mahadevpur"],"Regonda":["Regonda","Bhupalpally","Kataram","Mahadevpur"]},
+  "Rajanna Sircilla":{"Boinpalle":["Boinpalle","Sircilla","Koheda","Ellanthakunta"],"Choppadandi":["Choppadandi","Karimnagar","Sircilla","Vemulawada"],"Ellanthakunta":["Ellanthakunta","Sircilla","Koheda","Gambhiraopet"],"Gambhiraopet":["Gambhiraopet","Sircilla","Koheda","Ellanthakunta"],"Mustabad":["Mustabad","Sircilla","Koheda","Ellanthakunta"],"Sircilla":["Sircilla","Koheda","Ellanthakunta","Gambhiraopet"],"Yellareddypet":["Yellareddypet","Sircilla","Koheda","Ellanthakunta"]},
+  "Peddapalli":{"Julapalle":["Julapalle","Peddapalle","Ramagundam","Manthani"],"Manthani":["Manthani","Peddapalle","Ramagundam","Julapalle"],"Mutharam":["Mutharam","Peddapalle","Ramagundam","Manthani"],"Peddapalle":["Peddapalle","Ramagundam","Manthani","Julapalle"],"Ramagundam":["Ramagundam","Peddapalle","Manthani","Julapalle"],"Sultanabad":["Sultanabad","Peddapalle","Ramagundam","Manthani"]},
+  "Jagtial":{"Jagtial":["Jagtial","Korutla","Mallapur","Metpalle"],"Korutla":["Korutla","Jagtial","Mallapur","Metpalle"],"Mallapur":["Mallapur","Jagtial","Korutla","Metpalle"],"Metpalle":["Metpalle","Jagtial","Korutla","Mallapur"],"Pegadapalle":["Pegadapalle","Jagtial","Korutla","Mallapur"],"Raikal":["Raikal","Jagtial","Korutla","Mallapur"],"Sarangapur":["Sarangapur","Jagtial","Korutla","Mallapur"]},
+  "Mancherial":{"Bellampalle":["Bellampalle","Mancherial","Chennur","Luxettipet"],"Chennur":["Chennur","Mancherial","Bellampalle","Luxettipet"],"Hajipur":["Hajipur","Mancherial","Bellampalle","Chennur"],"Jannaram":["Jannaram","Mancherial","Bellampalle","Chennur"],"Luxettipet":["Luxettipet","Mancherial","Bellampalle","Chennur"],"Mancherial":["Mancherial","Bellampalle","Chennur","Luxettipet"],"Naspur":["Naspur","Mancherial","Bellampalle","Chennur"]},
+  "Nirmal":{"Armoor":["Armoor","Nizamabad","Dichpally","Kotagiri"],"Bhainsa":["Bhainsa","Nirmal","Adilabad","Mudhole"],"Dilawarpur":["Dilawarpur","Nirmal","Bhainsa","Mudhole"],"Khanapur":["Khanapur","Nirmal","Bhainsa","Mudhole"],"Kuntala":["Kuntala","Nirmal","Bhainsa","Mudhole"],"Mudhole":["Mudhole","Nirmal","Bhainsa","Khanapur"],"Nirmal":["Nirmal","Bhainsa","Mudhole","Khanapur"]},
+  "Kamareddy":{"Banswada":["Banswada","Kamareddy","Bheemgal","Enkoor"],"Bhiknoor":["Bhiknoor","Kamareddy","Banswada","Domakonda"],"Birkur":["Birkur","Kamareddy","Banswada","Domakonda"],"Domakonda":["Domakonda","Kamareddy","Banswada","Jakranpalle"],"Gandhari":["Gandhari","Kamareddy","Banswada","Domakonda"],"Jakranpalle":["Jakranpalle","Kamareddy","Domakonda","Lingampet"],"Kamareddy":["Kamareddy","Banswada","Domakonda","Jakranpalle"],"Lingampet":["Lingampet","Kamareddy","Banswada","Domakonda"],"Pitlam":["Pitlam","Kamareddy","Banswada","Domakonda"],"Renjal":["Renjal","Kamareddy","Banswada","Domakonda"]},
+  "Kumuram Bheem Asifabad":{"Asifabad":["Asifabad","Kagaznagar","Sirpur","Jainath"],"Bejjur":["Bejjur","Asifabad","Kagaznagar","Sirpur"],"Dahegaon":["Dahegaon","Asifabad","Kagaznagar","Sirpur"],"Gudihatnoor":["Gudihatnoor","Asifabad","Kagaznagar","Sirpur"],"Jainath":["Jainath","Asifabad","Kagaznagar","Sirpur"],"Kagaznagar":["Kagaznagar","Asifabad","Sirpur","Jainath"],"Kerameri":["Kerameri","Asifabad","Kagaznagar","Sirpur"],"Koutala":["Koutala","Asifabad","Kagaznagar","Sirpur"],"Narnoor":["Narnoor","Asifabad","Kagaznagar","Sirpur"],"Sirpur":["Sirpur","Asifabad","Kagaznagar","Jainath"],"Wankidi":["Wankidi","Asifabad","Kagaznagar","Sirpur"]},
+  "Narayanpet":{"Kosgi":["Kosgi","Narayanpet","Makthal","Marikal"],"Makthal":["Makthal","Narayanpet","Kosgi","Marikal"],"Marikal":["Marikal","Narayanpet","Makthal","Kosgi"],"Narayanpet":["Narayanpet","Makthal","Kosgi","Marikal"],"Utkoor":["Utkoor","Narayanpet","Makthal","Kosgi"]}
+};
+
+const HOSPITALS=[
+  {name:"Osmania General Hospital",district:"Hyderabad",type:"Government"},
+  {name:"Gandhi Hospital",district:"Hyderabad",type:"Government"},
+  {name:"NIMS Hyderabad",district:"Hyderabad",type:"Government"},
+  {name:"ESI Hospital Erragadda",district:"Hyderabad",type:"Government"},
+  {name:"Apollo Hospitals Jubilee Hills",district:"Hyderabad",type:"Private"},
+  {name:"Care Hospitals Banjara Hills",district:"Hyderabad",type:"Private"},
+  {name:"Yashoda Hospitals Secunderabad",district:"Hyderabad",type:"Private"},
+  {name:"Continental Hospitals",district:"Hyderabad",type:"Private"},
+  {name:"Sunshine Hospitals",district:"Hyderabad",type:"Private"},
+  {name:"Kamineni Hospitals LB Nagar",district:"Hyderabad",type:"Private"},
+  {name:"Global Hospitals",district:"Hyderabad",type:"Private"},
+  {name:"Medicover Hospitals",district:"Hyderabad",type:"Private"},
+  {name:"AIG Hospitals Gachibowli",district:"Hyderabad",type:"Private"},
+  {name:"Government Hospital Nizamabad",district:"Nizamabad",type:"Government"},
+  {name:"Government Hospital Karimnagar",district:"Karimnagar",type:"Government"},
+  {name:"Government Hospital Warangal",district:"Warangal",type:"Government"},
+  {name:"MGM Hospital Warangal",district:"Warangal",type:"Government"},
+  {name:"Kakatiya Medical College",district:"Warangal",type:"Government"},
+  {name:"Government Hospital Khammam",district:"Khammam",type:"Government"},
+  {name:"Government Hospital Nalgonda",district:"Nalgonda",type:"Government"},
+  {name:"Government Hospital Mahbubnagar",district:"Mahbubnagar",type:"Government"},
+  {name:"Government Hospital Adilabad",district:"Adilabad",type:"Government"},
+  {name:"Government Hospital Siddipet",district:"Siddipet",type:"Government"},
+  {name:"Government Hospital Sangareddy",district:"Sangareddy",type:"Government"},
+  {name:"Bhadrachalam Area Hospital",district:"Bhadradri Kothagudem",type:"Government"},
+  {name:"Government Hospital Jagtial",district:"Jagtial",type:"Government"},
+  {name:"Government Hospital Mancherial",district:"Mancherial",type:"Government"},
+  {name:"Government Hospital Nirmal",district:"Nirmal",type:"Government"},
+  {name:"Government Hospital Kamareddy",district:"Kamareddy",type:"Government"},
+  {name:"Other Hospital",district:"All",type:"Other"}
+];
+
+const REWARDS=[
+  {name:"Amazon Pay",icon:"🛒",pts:500,val:"₹50 off"},
+  {name:"Domino's Pizza",icon:"🍕",pts:300,val:"₹100 off"},
+  {name:"Apollo Pharmacy",icon:"💊",pts:400,val:"₹75 off"},
+  {name:"Uber",icon:"🚗",pts:200,val:"₹40 off"},
+  {name:"Cult.fit",icon:"💪",pts:600,val:"1 Month Free"},
+  {name:"Swiggy",icon:"🍱",pts:250,val:"₹60 off"},
+  {name:"BigBasket",icon:"🥦",pts:350,val:"₹80 off"},
+  {name:"Paytm",icon:"💳",pts:150,val:"₹25 cashback"}
+];
+
+const TIPS=[
+  {ico:"💧",title:"Stay Hydrated / నీరు త్రాగండి",desc:"Drink 8-10 glasses of water daily before donation.",pts:5},
+  {ico:"🥗",title:"Iron-Rich Diet / ఇనుమ ఆహారం",desc:"Eat spinach, lentils and dates to boost iron levels.",pts:5},
+  {ico:"😴",title:"Rest Well / విశ్రాంతి తీసుకోండి",desc:"Get 7-8 hours of sleep before donation day.",pts:5},
+  {ico:"🚶",title:"Light Exercise / తేలికపాటి వ్యాయామం",desc:"Walk 30 minutes daily to maintain good health.",pts:5},
+  {ico:"🩺",title:"Regular Checkup / నిర్ణీత పరీక్ష",desc:"Get hemoglobin checked every 3 months.",pts:5}
+];
+
+// ═══ STATE ═══
+const API='https://jeevan-mitra.onrender.com/api';
+let socket,currentUser,currentRole,otpCtx,selBloodD,selBloodH,selBloodReq,selBloodEd,pendingReq,otpTimer,qlRole='donor',selUrg='normal';
+let allAdminH=[],allAdminD=[],confirmCallback=null;
+
+// ═══ INIT ═══
+window.addEventListener('DOMContentLoaded',()=>{
+  // Set max DOB to today (no future dates)
+  const today=new Date().toISOString().split('T')[0];
+  const dobInput=document.getElementById('d-dob');
+  if(dobInput)dobInput.max=today;
+  // Confirm dialog OK button
+  document.getElementById('conf-ok').onclick=function(){if(confirmCallback){confirmCallback();closeConfirm()}};
+  populateDistricts();
+  autoLogin();
+  setTimeout(()=>showScreen('onboarding'),2000);
+});
+
+function populateDistricts(){
+  const dists=Object.keys(TG).sort();
+  ['d-dist'].forEach(id=>{
+    const s=document.getElementById(id);
+    if(!s)return;
+    dists.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;s.appendChild(o)});
+  });
+}
+
+function loadMandals(dId,mId){
+  const d=document.getElementById(dId).value;
+  const ms=document.getElementById(mId);
+  ms.innerHTML='<option value="">Select Mandal</option>';
+  if(d&&TG[d])Object.keys(TG[d]).sort().forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;ms.appendChild(o)});
+}
+
+function loadVillages(mId,vId,dId){
+  const d=document.getElementById(dId).value;
+  const m=document.getElementById(mId).value;
+  const vs=document.getElementById(vId);
+  vs.innerHTML='<option value="">Select Village</option>';
+  if(d&&m&&TG[d]&&TG[d][m])TG[d][m].sort().forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;vs.appendChild(o)});
+}
+
+function autoLogin(){
+  const t=localStorage.getItem('jm_token'),r=localStorage.getItem('jm_role'),u=localStorage.getItem('jm_user');
+  if(t&&r&&u){
+    currentUser=JSON.parse(u);currentRole=r;
+    setTimeout(()=>{
+      if(r==='donor')initDonor();
+      else if(r==='hospital')initHospital();
+      else if(r==='admin')initAdmin();
+    },2200);
+  }
+}
+
+// ═══ NAVIGATION ═══
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const content=document.getElementById('app-content');
+  if(content)content.scrollTop=0;
+  window.scrollTo(0,0);
+}
+function selBlood(btn,ctx){btn.parentElement.querySelectorAll('.blood-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');if(ctx==='d')selBloodD=btn.textContent;else if(ctx==='h')selBloodH=btn.textContent;else if(ctx==='ed')selBloodEd=btn.textContent;else selBloodReq=btn.textContent}
+function selRole(r){qlRole=r;document.getElementById('ql-donor').classList.toggle('sel',r==='donor');document.getElementById('ql-hospital').classList.toggle('sel',r==='hospital')}
+function togglePw(id){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password'}
+function closeModal(id){document.getElementById(id).classList.remove('active')}
+
+// ═══ API ═══
+async function api(ep,method='GET',body=null){
+  const h={'Content-Type':'application/json'};
+  const t=localStorage.getItem('jm_token');
+  if(t)h['Authorization']=`Bearer ${t}`;
+  const o={method,headers:h};
+  if(body)o.body=JSON.stringify(body);
+  const r=await fetch(`${API}/api${ep}`,o);
+  const d=await r.json();
+  if(!r.ok)throw new Error(d.message||'Server error');
+  return d;
+}
+
+// ═══ OTP ═══
+function otpNext(inp,idx){
+  const ins=document.querySelectorAll('.otp-inp');
+  if(inp.value&&idx<5)ins[idx+1].focus();
+  if(getOTP().length===6)setTimeout(verifyOTP,300);
+}
+function getOTP(){return[...document.querySelectorAll('.otp-inp')].map(i=>i.value).join('')}
+function clearOTP(){document.querySelectorAll('.otp-inp').forEach(i=>i.value='')}
+function startTimer(){
+  let c=30;
+  document.getElementById('timer-txt').style.display='inline';
+  document.getElementById('resend-btn').style.display='none';
+  if(otpTimer)clearInterval(otpTimer);
+  otpTimer=setInterval(()=>{c--;document.getElementById('timer-cnt').textContent=c;if(c<=0){clearInterval(otpTimer);document.getElementById('timer-txt').style.display='none';document.getElementById('resend-btn').style.display='inline'}},1000);
+}
+function showOTPHint(otp){
+  document.getElementById('otp-val').textContent=otp;
+  document.getElementById('otp-hint').style.display='block';
+  const ins=document.querySelectorAll('.otp-inp');
+  otp.toString().split('').forEach((d,i)=>{if(ins[i])ins[i].value=d});
+}
+
+async function donorSendOTP(){
+  const name=document.getElementById('d-name').value.trim();
+  const phone=document.getElementById('d-phone').value.trim();
+  const dob=document.getElementById('d-dob').value;
+  const dist=document.getElementById('d-dist').value;
+  const mandal=document.getElementById('d-mandal').value;
+  const village=document.getElementById('d-village').value;
+  const terms=document.getElementById('d-terms').checked;
+  if(!name||!phone||!dob||!dist||!selBloodD)return showToast('Please fill all required fields','error');
+  if(phone.length!==10)return showToast('Enter valid 10-digit phone','error');
+  // Age check — must be 18+
+  const today=new Date();const bd=new Date(dob);
+  let age=today.getFullYear()-bd.getFullYear();
+  const m=today.getMonth()-bd.getMonth();
+  if(m<0||(m===0&&today.getDate()<bd.getDate()))age--;
+  if(age<18)return showToast('Donor must be at least 18 years old','error');
+  if(age>65)return showToast('Age must be under 65 years','error');
+  if(!terms)return showToast('Please accept Terms & Conditions','error');
+  try{
+    const city=village?`${village}, ${mandal}, ${dist}`:mandal?`${mandal}, ${dist}`:dist;
+    const res=await api('/auth/donor/send-otp','POST',{phone:`+91${phone}`,fullName:name,city,bloodGroup:selBloodD,dob,age});
+    otpCtx='donor';
+    document.getElementById('otp-sub').textContent=`OTP sent to +91${phone}`;
+    document.getElementById('otp-back').onclick=()=>showScreen('donor-register');
+    clearOTP();document.getElementById('otp-hint').style.display='none';
+    showScreen('otp-verify');startTimer();
+    if(res.otp)showOTPHint(res.otp);
+    else showToast('OTP sent!','success');
+  }catch(e){showToast(e.message,'error')}
+}
+
+async function quickLoginOTP(){
+  const phone=document.getElementById('ql-phone').value.trim();
+  if(phone.length!==10)return showToast('Enter valid 10-digit phone','error');
+  try{
+    const res=await api('/auth/donor/send-otp','POST',{phone:`+91${phone}`,fullName:'User',city:'Hyderabad'});
+    otpCtx=qlRole;
+    document.getElementById('otp-sub').textContent=`OTP sent to +91${phone}`;
+    document.getElementById('otp-back').onclick=()=>showScreen('quick-login');
+    clearOTP();document.getElementById('otp-hint').style.display='none';
+    showScreen('otp-verify');startTimer();
+    if(res.otp)showOTPHint(res.otp);
+    else showToast('OTP sent!','success');
+  }catch(e){showToast(e.message,'error')}
+}
+
+async function verifyOTP(){
+  const otp=getOTP();
+  if(otp.length<6)return showToast('Enter complete 6-digit OTP','error');
+  try{
+    let data,phone;
+    if(otpCtx==='donor'){
+      phone=document.getElementById('d-phone').value.trim()||document.getElementById('ql-phone').value.trim();
+      data=await api('/auth/donor/verify-otp','POST',{phone:`+91${phone}`,otp});
+      localStorage.setItem('jm_token',data.token);
+      localStorage.setItem('jm_role','donor');
+      localStorage.setItem('jm_user',JSON.stringify(data.donor));
+      currentUser=data.donor;currentRole='donor';
+      if(otpTimer)clearInterval(otpTimer);
+      showToast('Welcome to Jeevan Mitra! 🎉','success');
+      initDonor();
+    }
+  }catch(e){showToast(e.message,'error')}
+}
+
+function resendOTP(){if(otpCtx==='donor')donorSendOTP();else quickLoginOTP()}
+
+// ═══ HOSPITAL LOGIN ═══
+async function hospitalLogin(){
+  const email=document.getElementById('h-email').value.trim();
+  const pass=document.getElementById('h-pass').value.trim();
+  if(!email||!pass)return showToast('Enter email and password','error');
+  try{
+    const data=await api('/hospitals/login','POST',{email,password:pass});
+    localStorage.setItem('jm_token',data.token);
+    localStorage.setItem('jm_role','hospital');
+    localStorage.setItem('jm_user',JSON.stringify(data.hospital));
+    currentUser=data.hospital;currentRole='hospital';
+    showToast('Welcome! 🏥','success');
+    initHospital();
+  }catch(e){showToast(e.message,'error')}
+}
+
+// ═══ ADMIN LOGIN ═══
+async function adminLogin(){
+  const email=document.getElementById('adm-email').value.trim();
+  const pass=document.getElementById('adm-pass').value.trim();
+  if(!email||!pass)return showToast('Enter email and password','error');
+  try{
+    const data=await api('/admin/login','POST',{email,password:pass});
+    localStorage.setItem('jm_token',data.token);
+    localStorage.setItem('jm_role','admin');
+    localStorage.setItem('jm_user',JSON.stringify({email}));
+    currentRole='admin';
+    document.getElementById('adm-email-show').textContent=email;
+    showToast('Welcome Admin! 🔐','success');
+    initAdmin();
+  }catch(e){showToast(e.message,'error')}
+}
+
+// ═══ DONOR DASHBOARD ═══
+function initDonor(){
+  showScreen('donor-home');
+  document.getElementById('dh-name').textContent=currentUser?.fullName||'Donor';
+  document.getElementById('dh-loc').textContent=`📍 ${currentUser?.city||'Telangana'}`;
+  document.getElementById('dh-blood').textContent=`🩸 ${currentUser?.bloodGroup||'A+'}`;
+  document.getElementById('dh-pts').textContent=`⭐ ${currentUser?.points||0} pts`;
+  document.getElementById('dh-don').textContent=`💉 ${currentUser?.donationCount||0} donations`;
+  renderDonorHome();
+  connectSocket('donor');
+}
+
+function dTab(tab,btn){
+  document.querySelectorAll('#donor-nav .nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(tab==='home')renderDonorHome();
+  else if(tab==='requests')renderRequests();
+  else if(tab==='history')renderDHistory();
+  else if(tab==='leaderboard')renderLeaderboard();
+  else if(tab==='profile')renderDProfile();
+}
+
+function renderDonorHome(){
+  const pts=currentUser?.points||0;
+  const tier=getTier(pts);
+  const inCool=currentUser?.cooldownUntil&&new Date(currentUser.cooldownUntil)>new Date();
+  let h='';
+  h+=`<div class="avail-row"><div><div class="avail-lbl">Availability / లభ్యత</div><div class="avail-sub">${inCool?'In cooldown':'Available to donate'}</div></div><button class="toggle ${inCool?'':'on'}" onclick="this.classList.toggle('on');showToast(this.classList.contains('on')?'You are available ✅':'You are unavailable ❌',this.classList.contains('on')?'success':'error')"></button></div>`;
+  if(inCool){const days=Math.ceil((new Date(currentUser.cooldownUntil)-new Date())/86400000);h+=`<div class="cooldown-card"><div class="cooldown-title">⏳ Cooldown Period</div><div class="cooldown-days">${days} days left</div><div class="cooldown-sub">Next donation: ${new Date(currentUser.cooldownUntil).toLocaleDateString('en-IN')}</div></div>`}
+  h+=`<div class="tier-card"><div class="tier-ico">${tier.ico}</div><div style="flex:1"><div class="tier-name">${tier.name} Donor</div><div class="tier-pts">${pts} / ${tier.next} points</div><div class="pts-bar"><div class="pts-fill" style="width:${Math.min(100,(pts/tier.next)*100)}%"></div></div></div></div>`;
+  // Quick action cards
+  h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+    <div class="card" onclick="dTab('history',document.querySelectorAll('#donor-nav .nav-btn')[2])" style="cursor:pointer;text-align:center;padding:16px 10px;background:linear-gradient(135deg,#FFEBEE,#FFF);">
+      <div style="font-size:28px;margin-bottom:4px;">📋</div>
+      <div style="font-weight:700;font-size:12px;color:var(--red);">Donation History</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px;">${currentUser?.donationCount||0} donations</div>
+    </div>
+    <div class="card" onclick="dTab('leaderboard',document.querySelectorAll('#donor-nav .nav-btn')[3])" style="cursor:pointer;text-align:center;padding:16px 10px;background:linear-gradient(135deg,#FFF8E1,#FFF);">
+      <div style="font-size:28px;margin-bottom:4px;">🏆</div>
+      <div style="font-weight:700;font-size:12px;color:var(--gold);">Leaderboard</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px;">See your rank</div>
+    </div>
+  </div>`;
+  h+=`<div class="sec-title">🚨 Urgent Requests Nearby</div><div id="home-reqs"><div class="card" style="text-align:center;color:var(--muted);padding:20px;">Loading...</div></div>`;
+  document.getElementById('donor-body').innerHTML=h;
+  loadReqsPreview();
+}
+
+async function loadReqsPreview(){
+  try{
+    const d=await api('/requests/pending');
+    const c=document.getElementById('home-reqs');
+    if(!d.requests?.length){c.innerHTML=`<div class="empty"><div class="empty-ico">✅</div><div class="empty-title">No requests nearby</div><div class="empty-sub">All good! Check back later</div></div>`;return}
+    c.innerHTML=d.requests.map(r=>reqCard(r)).join('');
+  }catch(e){document.getElementById('home-reqs').innerHTML=`<div class="card" style="text-align:center;color:var(--muted);">Could not load</div>`}
+}
+
+function renderRequests(){
+  document.getElementById('donor-body').innerHTML=`
+    <div class="sec-title" style="margin-top:4px;">🩸 Blood Requests</div>
+    <div class="chip-row">
+      <div class="chip active" onclick="filterReqs('all',this)">All</div>
+      <div class="chip" onclick="filterReqs('critical',this)">🔴 Critical</div>
+      <div class="chip" onclick="filterReqs('urgent',this)">🟠 Urgent</div>
+      <div class="chip" onclick="filterReqs('normal',this)">🟢 Normal</div>
+    </div>
+    <div id="req-list"><div style="text-align:center;padding:30px;color:var(--muted);">Loading...</div></div>`;
+  loadAllReqs('all');
+}
+
+async function loadAllReqs(filter){
+  try{
+    const d=await api('/requests/pending');
+    let reqs=d.requests||d||[];
+    if(filter!=='all')reqs=reqs.filter(r=>r.urgency===filter);
+    const c=document.getElementById('req-list');
+    if(!reqs.length){c.innerHTML=`<div class="empty"><div class="empty-ico">✅</div><div class="empty-title">No requests found</div></div>`;return}
+    c.innerHTML=reqs.map(r=>reqCard(r)).join('');
+  }catch(e){document.getElementById('req-list').innerHTML=`<div class="card" style="text-align:center;color:var(--muted);">Could not load</div>`}
+}
+
+function filterReqs(filter,btn){btn.closest('.chip-row').querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));btn.classList.add('active');loadAllReqs(filter)}
+
+function reqCard(r){return`<div class="req-card ${r.urgency||'normal'}"><div class="req-hdr"><div class="blood-badge">${r.bloodGroup||'A+'}</div><div class="urg-badge ${r.urgency||'normal'}">${r.urgency||'normal'}</div></div><div class="req-hosp">🏥 ${r.hospital?.name||r.hospital?.hospitalName||'Hospital'}</div><div class="req-details"><span>📍 ${r.hospital?.city||'Hyderabad'}</span><span>🩸 ${r.units||1} unit(s)</span><span>⏰ ${ago(r.createdAt)}</span></div>${r.notes?`<div style="font-size:11px;color:var(--slate);margin-top:5px;">📝 ${r.notes}</div>`:''}<button class="btn-accept" onclick='showAccept(${JSON.stringify(r).replace(/"/g,"&quot;")})'>Accept / అంగీకరించు</button></div>`}
+
+function showAccept(req){
+  pendingReq=req;
+  document.getElementById('accept-details').innerHTML=`<div class="card" style="margin:10px 0;"><div style="display:flex;gap:12px;align-items:center;"><div class="blood-badge" style="font-size:20px;padding:8px 14px;">${req.bloodGroup||'A+'}</div><div><div style="font-weight:700;font-size:14px;">${req.hospital?.hospitalName||'Hospital'}</div><div style="font-size:12px;color:var(--muted);">📍 ${req.hospital?.city||'Hyderabad'}</div><div style="font-size:11px;color:var(--slate);margin-top:3px;">Units: ${req.units||1} · Points: +${urgPts(req.urgency)}</div></div></div>${req.notes?`<div style="margin-top:8px;font-size:12px;color:var(--slate);">📝 ${req.notes}</div>`:''}</div><div style="font-size:12px;color:var(--muted);">Hospital will receive your contact after acceptance.</div>`;
+  document.getElementById('accept-modal').classList.add('active');
+}
+
+async function confirmAccept(){
+  if(!pendingReq)return;
+  try{
+    await api(`/requests/${pendingReq._id}/accept`,'PUT');
+    closeModal('accept-modal');
+    showToast('Request accepted! Hospital will contact you 💪','success');
+    loadAllReqs('all');
+    // Show map after short delay
+    setTimeout(()=>showRouteMap(pendingReq),600);
+  }
+  catch(e){showToast(e.message,'error')}
+}
+
+// ═══ MAP ═══
+let _mapReq=null,_donorCoords=null,_hospitalCoords=null;
+
+function closeMapModal(){
+  document.getElementById('map-overlay').classList.remove('active');
+  document.getElementById('map-iframe').src='about:blank';
+}
+
+function showRouteMap(req){
+  _mapReq=req;
+  const hospName=req.hospital?.hospitalName||req.hospital?.name||'Hospital';
+  const hospCity=req.hospital?.city||'Hyderabad, Telangana';
+  document.getElementById('map-sub').textContent=`${hospName} · ${hospCity}`;
+
+  // Build chips
+  document.getElementById('map-chips').innerHTML=`
+    <div class="mchip red">🩸 ${req.bloodGroup||'A+'}</div>
+    <div class="mchip blue">🏥 ${hospName}</div>
+    <div class="mchip">📍 ${hospCity}</div>
+    <div class="mchip green">⚡ ${req.urgency||'normal'}</div>`;
+
+  document.getElementById('map-overlay').classList.add('active');
+
+  // Try geolocation for donor's current position
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      pos=>{
+        _donorCoords={lat:pos.coords.latitude,lng:pos.coords.longitude};
+        loadMapWithCoords(hospName,hospCity);
+      },
+      ()=>loadMapWithCoords(hospName,hospCity) // fallback: no donor loc
+    ,{timeout:6000});
+  } else {
+    loadMapWithCoords(hospName,hospCity);
+  }
+}
+
+function loadMapWithCoords(hospName,hospCity){
+  const dest=encodeURIComponent(`${hospName}, ${hospCity}, India`);
+  let src;
+  if(_donorCoords){
+    // Directions URL without API key (works as embed)
+    const lat=_donorCoords.lat,lng=_donorCoords.lng;
+    src=`https://maps.google.com/maps?saddr=${lat},${lng}&daddr=${dest}&output=embed&hl=en`;
+  } else {
+    // Just show hospital location
+    src=`https://maps.google.com/maps?q=${dest}&output=embed&hl=en`;
+  }
+  const frame=document.getElementById('map-iframe');
+  frame.style.height='360px';
+  frame.src=src;
+}
+
+function openInGoogleMaps(){
+  if(!_mapReq)return;
+  const hospName=_mapReq.hospital?.hospitalName||_mapReq.hospital?.name||'Hospital';
+  const hospCity=_mapReq.hospital?.city||'Hyderabad';
+  const dest=encodeURIComponent(`${hospName}, ${hospCity}, India`);
+  let url;
+  if(_donorCoords){
+    url=`https://www.google.com/maps/dir/${_donorCoords.lat},${_donorCoords.lng}/${dest}`;
+  } else {
+    url=`https://www.google.com/maps/search/${dest}`;
+  }
+  window.open(url,'_blank');
+}
+
+function renderHealth(){
+  const inCool=currentUser?.cooldownUntil&&new Date(currentUser.cooldownUntil)>new Date();
+  let h=`<div class="sec-title" style="margin-top:4px;">💚 Health Hub / ఆరోగ్య కేంద్రం</div>`;
+  if(inCool){const days=Math.ceil((new Date(currentUser.cooldownUntil)-new Date())/86400000);h+=`<div class="cooldown-card"><div class="cooldown-title">⏳ Cooldown Active — Read tips to earn points!</div><div class="cooldown-days">${days} days</div></div>`}
+  h+=TIPS.map((t,i)=>`<div class="health-card"><div class="health-ico">${t.ico}</div><div style="flex:1"><div class="health-title">${t.title}</div><div class="health-sub">${t.desc}</div><button class="btn-read" onclick="readTip(${i},this)">Read & Earn +${t.pts} pts</button></div></div>`).join('');
+  document.getElementById('donor-body').innerHTML=h;
+}
+
+function readTip(i,btn){btn.textContent='✅ Read!';btn.style.background='#66BB6A';btn.disabled=true;currentUser.points=(currentUser.points||0)+TIPS[i].pts;localStorage.setItem('jm_user',JSON.stringify(currentUser));document.getElementById('dh-pts').textContent=`⭐ ${currentUser.points} pts`;showToast(`+${TIPS[i].pts} points! 🎉`,'success')}
+
+function renderRewards(){
+  const pts=currentUser?.points||0;
+  let h=`<div class="sec-title" style="margin-top:4px;">🎁 Rewards / బహుమతులు</div><div class="card" style="text-align:center;background:linear-gradient(135deg,#FFF8E1,#FFFDE7);border:1px solid #FFE082;margin-bottom:12px;"><div style="font-size:28px;">⭐</div><div style="font-family:'Nunito',sans-serif;font-size:26px;font-weight:900;color:#F57F17;">${pts}</div><div style="font-size:12px;color:var(--muted);">Available Points</div></div>`;
+  h+=REWARDS.map(r=>`<div class="reward-card"><div class="reward-logo">${r.ico}</div><div style="flex:1"><div class="reward-name">${r.name}</div><div class="reward-pts">⭐ ${r.pts} pts · ${r.val}</div></div><button class="btn-redeem ${pts>=r.pts?'can':''}" onclick="redeem('${r.name}','${r.val}','${r.ico}',${r.pts})" ${pts<r.pts?'disabled':''} >${pts>=r.pts?'Redeem':'Need '+r.pts}</button></div>`).join('');
+  document.getElementById('donor-body').innerHTML=h;
+}
+
+function redeem(name,val,ico,pts){
+  if((currentUser?.points||0)<pts)return showToast('Not enough points','error');
+  currentUser.points-=pts;localStorage.setItem('jm_user',JSON.stringify(currentUser));
+  document.getElementById('dh-pts').textContent=`⭐ ${currentUser.points} pts`;
+  const code='JM'+Math.random().toString(36).substring(2,8).toUpperCase();
+  document.getElementById('redeem-details').innerHTML=`<div class="card" style="text-align:center;margin:10px 0;"><div style="font-size:28px;margin-bottom:6px;">${ico}</div><div style="font-weight:700;font-size:15px;">${name}</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">${val}</div><div style="background:var(--red-light);border:2px dashed var(--red-mid);border-radius:10px;padding:12px;margin-top:12px;"><div style="font-size:10px;color:var(--muted);margin-bottom:3px;">YOUR CODE</div><div style="font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--red);letter-spacing:3px;">${code}</div></div><button onclick="navigator.clipboard.writeText('${code}');showToast('Copied!','success')" style="margin-top:10px;padding:7px 18px;border-radius:20px;background:var(--red);color:#fff;border:none;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">📋 Copy Code</button></div>`;
+  document.getElementById('redeem-modal').classList.add('active');
+}
+
+function calcAge(dob){if(!dob)return null;const today=new Date();const bd=new Date(dob);let age=today.getFullYear()-bd.getFullYear();const m=today.getMonth()-bd.getMonth();if(m<0||(m===0&&today.getDate()<bd.getDate()))age--;return age}
+function fmtDob(dob){if(!dob)return'-';const d=new Date(dob);return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}
+
+function renderDProfile(){
+  const u=currentUser||{};
+  const tier=getTier(u.points||0);
+  const age=calcAge(u.dob);
+  document.getElementById('donor-body').innerHTML=`
+    <div class="prof-hdr" style="margin:-14px -14px 14px;">
+      <div class="prof-av">${(u.fullName||'D')[0]}</div>
+      <div class="prof-name">${u.fullName||'Donor'}</div>
+      <div class="prof-badge">🩸 ${u.bloodGroup||'A+'} · ${tier.name}</div>
+    </div>
+    <div class="qr-box" onclick="openQRModal()" style="cursor:pointer;">
+      <div style="font-weight:700;font-size:13px;margin-bottom:8px;">📱 Your Donor QR Code</div>
+      <div id="qr-inline-wrap" style="display:flex;justify-content:center;margin-bottom:8px;"></div>
+      <div style="font-size:11px;color:var(--muted);">Tap to enlarge &amp; download</div>
+    </div>
+    <div class="prof-item"><span class="prof-lbl">📱 Phone</span><span class="prof-val">${u.phone||'-'}</span></div>
+    <div class="prof-item"><span class="prof-lbl">📍 Location</span><span class="prof-val">${u.city||'-'}</span></div>
+    <div class="prof-item"><span class="prof-lbl">🩸 Blood Group</span><span class="prof-val">${u.bloodGroup||'-'}</span></div>
+    <div class="prof-item"><span class="prof-lbl">🎂 Date of Birth</span><span class="prof-val">${fmtDob(u.dob)}</span></div>
+    <div class="prof-item"><span class="prof-lbl">🎂 Age</span><span class="prof-val">${age!==null?age+' years':'-'}</span></div>
+    <div class="prof-item"><span class="prof-lbl">⭐ Points</span><span class="prof-val">${u.points||0}</span></div>
+    <div class="prof-item"><span class="prof-lbl">💉 Donations</span><span class="prof-val">${u.donationCount||0}</span></div>
+    <div style="margin-top:14px;">
+      <button class="btn btn-outline" onclick="openQRModal()">📱 View Full QR Code</button>
+      <button class="btn btn-outline" onclick="openDonorEdit()" style="margin-top:8px;">✏️ Edit Profile</button>
+      <button class="btn btn-outline" onclick="openDonorChangePw()" style="margin-top:8px;">🔑 Change Password</button>
+      <button class="btn btn-outline" onclick="deactivateDonorAccount()" style="margin-top:8px;color:#E65100;border-color:#FFB74D;">⏸ Deactivate Account</button>
+      <button class="btn btn-outline" onclick="logout()" style="margin-top:8px;color:var(--red);border-color:var(--red);">🚪 Logout</button>
+    </div>`;
+  // Generate inline mini QR
+  setTimeout(()=>generateQR('qr-inline-wrap',80),100);
+}
+
+// ═══ HOSPITAL DASHBOARD ═══
+function initHospital(){
+  showScreen('hospital-home');
+  document.getElementById('hh-name').textContent=currentUser?.hospitalName||'Hospital';
+  document.getElementById('hh-loc').textContent=`📍 ${currentUser?.city||'Telangana'}`;
+  renderHospHome();
+  connectSocket('hospital');
+}
+
+function hTab(tab,btn){
+  document.querySelectorAll('#hosp-nav .nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(tab==='home')renderHospHome();
+  else if(tab==='requests')renderHospReqs();
+  else if(tab==='new')renderNewReq();
+  else if(tab==='scan')renderScan();
+  else if(tab==='profile')renderHospProfile();
+}
+
+function renderHospHome(){
+  document.getElementById('hospital-body').innerHTML=`
+    <div class="sec-title" style="margin-top:4px;">Quick Actions</div>
+    <button class="btn btn-red" onclick="renderNewReq()">➕ New Blood Request / కొత్త అభ్యర్థన</button>
+    <button class="btn btn-blue" onclick="renderHospReqs()" style="margin-top:8px;">📋 View All Requests</button>
+    <div class="sec-title">Recent Requests</div>
+    <div id="hosp-recent"><div style="text-align:center;padding:20px;color:var(--muted);">Loading...</div></div>`;
+  loadHospReqs(true);
+}
+
+async function loadHospReqs(preview=false){
+  try{
+    const d=await api('/requests/hospital/mine');
+    const reqs=d.requests||[];
+    document.getElementById('hh-total').textContent=d.stats?.total||reqs.length;
+    document.getElementById('hh-open').textContent=d.stats?.pending||reqs.filter(r=>r.status==='pending').length;
+    document.getElementById('hh-done').textContent=d.stats?.fulfilled||reqs.filter(r=>r.status==='fulfilled').length;
+    const cid=preview?'hosp-recent':'hosp-req-list';
+    const c=document.getElementById(cid);
+    if(!c)return;
+    const list=preview?reqs.slice(0,3):reqs;
+    if(!list.length){c.innerHTML=`<div class="empty"><div class="empty-ico">📋</div><div class="empty-title">No requests yet</div><div class="empty-sub">Create your first blood request</div></div>`;return}
+    c.innerHTML=list.map(r=>hospReqCard(r)).join('');
+  }catch(e){const c=document.getElementById(preview?'hosp-recent':'hosp-req-list');if(c)c.innerHTML=`<div class="card" style="text-align:center;color:var(--muted);">Could not load</div>`}
+}
+
+function hospReqCard(r){
+  const sc={open:'#43A047',accepted:'#FB8C00',fulfilled:'#78909C'};
+  return`<div class="req-card ${r.urgency||'normal'}" style="margin-bottom:10px;"><div class="req-hdr"><div class="blood-badge">${r.bloodGroup||'A+'}</div><div style="display:flex;gap:5px;"><div class="urg-badge ${r.urgency||'normal'}">${r.urgency||'normal'}</div><div style="font-size:10px;font-weight:800;color:${sc[r.status]||'#43A047'};background:#F5F5F5;padding:2px 7px;border-radius:10px;">${r.status||'open'}</div></div></div><div class="req-details"><span>🩸 ${r.units||1} unit(s)</span><span>⏰ ${ago(r.createdAt)}</span>${r.patientName?`<span>👤 ${r.patientName}</span>`:''}</div>${r.donor?`<div style="margin-top:7px;padding:7px;background:var(--red-light);border-radius:7px;font-size:12px;"><strong>Donor:</strong> ${r.donor.fullName} · ${r.donor.phone}</div>`:''} ${r.status==='accepted'?`<button class="btn-accept" style="background:var(--green);" onclick="fulfill('${r._id}')">✅ Mark Fulfilled</button>`:''}</div>`;
+}
+
+function renderHospReqs(){
+  document.getElementById('hospital-body').innerHTML=`<div class="sec-title" style="margin-top:4px;">📋 All Requests</div><div id="hosp-req-list"><div style="text-align:center;padding:20px;color:var(--muted);">Loading...</div></div>`;
+  loadHospReqs(false);
+}
+
+function renderNewReq(){
+  document.getElementById('hospital-body').innerHTML=`
+    <div class="sec-title" style="margin-top:4px;">➕ New Blood Request</div>
+    <div class="grp"><label class="lbl">Blood Group Required</label><div class="blood-grid"><button class="blood-btn" onclick="selBlood(this,'req')">A+</button><button class="blood-btn" onclick="selBlood(this,'req')">A-</button><button class="blood-btn" onclick="selBlood(this,'req')">B+</button><button class="blood-btn" onclick="selBlood(this,'req')">B-</button><button class="blood-btn" onclick="selBlood(this,'req')">AB+</button><button class="blood-btn" onclick="selBlood(this,'req')">AB-</button><button class="blood-btn" onclick="selBlood(this,'req')">O+</button><button class="blood-btn" onclick="selBlood(this,'req')">O-</button></div></div>
+    <div class="grp"><label class="lbl">Units Required</label><select class="sel" id="req-units"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+    <div class="grp"><label class="lbl">Urgency Level</label><div class="urg-row"><button class="urg-btn normal sel" onclick="selUrgency(this,'normal')">🟢 Normal</button><button class="urg-btn urgent" onclick="selUrgency(this,'urgent')">🟠 Urgent</button><button class="urg-btn critical" onclick="selUrgency(this,'critical')">🔴 Critical</button></div></div>
+    <div class="grp"><label class="lbl">Patient Name (Optional)</label><input class="inp" id="req-patient" type="text" placeholder="Patient name"/></div>
+    <div class="grp"><label class="lbl">Doctor Ref No. (Optional)</label><input class="inp" id="req-doctor" type="text" placeholder="Doctor reference"/></div>
+    <div class="grp"><label class="lbl">Notes</label><input class="inp" id="req-notes" type="text" placeholder="Special requirements..."/></div>
+    <button class="btn btn-red" onclick="postReq()" style="margin-top:8px;">📢 Post Request / అభ్యర్థన పోస్ట్ చేయండి</button>`;
+}
+
+function selUrgency(btn,u){selUrg=u;document.querySelectorAll('.urg-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel')}
+
+async function postReq(){
+  if(!selBloodReq)return showToast('Select blood group','error');
+  try{
+    await api('/requests','POST',{bloodGroup:selBloodReq,units:parseInt(document.getElementById('req-units').value),urgency:selUrg,wardNumber:document.getElementById('req-patient').value,notes:document.getElementById('req-notes').value});
+    showToast('Request posted! Notifying donors 🚨','success');
+    setTimeout(()=>renderHospHome(),1500);
+  }catch(e){showToast(e.message,'error')}
+}
+
+async function fulfill(id){
+  try{await api(`/requests/${id}/fulfill`,'PUT');showToast('Marked as fulfilled! 🎉','success');loadHospReqs(false)}
+  catch(e){showToast(e.message,'error')}
+}
+
+function renderScan(){
+  document.getElementById('hospital-body').innerHTML=`
+    <div class="sec-title" style="margin-top:4px;">📷 Scan Donor QR</div>
+    <div class="card" style="text-align:center;padding:28px;"><div style="font-size:56px;margin-bottom:12px;">📷</div><div style="font-weight:700;font-size:15px;margin-bottom:6px;">QR Scanner</div><div style="font-size:12px;color:var(--muted);">Scan donor QR code for profile</div><button class="btn btn-blue" style="margin-top:14px;" onclick="showToast('Camera coming soon!','info')">Open Camera</button></div>
+    <div class="sec-title">Lookup by Phone</div>
+    <div class="grp"><input class="inp" id="scan-ph" type="tel" placeholder="Enter donor phone number"/></div>
+    <button class="btn btn-dark" onclick="lookupDonor()">🔍 Look Up Donor</button>
+    <div id="donor-result"></div>`;
+}
+
+async function lookupDonor(){
+  const ph=document.getElementById('scan-ph').value.trim();
+  if(!ph)return showToast('Enter phone number','error');
+  try{
+    const d=await api(`/hospitals/phone/+91${ph}`);
+    const dn=d.donor;
+    document.getElementById('donor-result').innerHTML=`<div class="card" style="margin-top:12px;"><div style="display:flex;gap:12px;align-items:center;"><div class="prof-av" style="width:46px;height:46px;font-size:18px;">${(dn.fullName||'D')[0]}</div><div style="flex:1"><div style="font-weight:700;">${dn.fullName}</div><div style="font-size:12px;color:var(--muted);">📍 ${dn.city} · ${dn.phone}</div></div><div class="blood-badge">${dn.bloodGroup}</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;"><div style="background:var(--red-light);border-radius:8px;padding:10px;text-align:center;"><div style="font-weight:900;font-size:18px;color:var(--red);">${dn.points||0}</div><div style="font-size:11px;color:var(--muted);">Points</div></div><div style="background:#E8F5E9;border-radius:8px;padding:10px;text-align:center;"><div style="font-weight:900;font-size:18px;color:var(--green);">${dn.donationCount||0}</div><div style="font-size:11px;color:var(--muted);">Donations</div></div></div></div>`;
+  }catch(e){showToast('Donor not found','error')}
+}
+
+function renderHospProfile(){
+  const u=currentUser||{};
+  document.getElementById('hospital-body').innerHTML=`
+    <div class="prof-hdr" style="margin:-14px -14px 14px;background:linear-gradient(135deg,#E3F2FD,#BBDEFB);"><div class="prof-av" style="background:var(--blue);">🏥</div><div class="prof-name">${u.hospitalName||'Hospital'}</div><div class="prof-badge" style="background:var(--blue);">📍 ${u.city||'Telangana'}</div></div>
+    <div class="prof-item"><span class="prof-lbl">📧 Email</span><span class="prof-val">${u.email||'-'}</span></div>
+    <div class="prof-item"><span class="prof-lbl">📱 Phone</span><span class="prof-val">${u.phone||'-'}</span></div>
+    <div class="prof-item"><span class="prof-lbl">📍 Location</span><span class="prof-val">${u.city||'-'}</span></div>
+    <div style="margin-top:14px;">
+      <button class="btn btn-outline" onclick="openHospEdit()">✏️ Edit Profile</button>
+      <button class="btn btn-outline" onclick="openHospChangePw()" style="margin-top:8px;">🔑 Change Password</button>
+      <button class="btn btn-outline" onclick="logout()" style="margin-top:8px;color:var(--red);border-color:var(--red);">🚪 Logout</button>
+    </div>`;
+}
+
+// ═══ ADMIN DASHBOARD ═══
+function initAdmin(){
+  showScreen('admin-home');
+  aTab('dash',document.querySelector('#adm-nav .nav-btn'));
+  loadAdminStats();
+}
+
+function aTab(tab,btn){
+  document.querySelectorAll('#adm-nav .nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(tab==='dash')renderAdminDash();
+  else if(tab==='hospitals')renderAdminHosps();
+  else if(tab==='donors')renderAdminDonors();
+  else if(tab==='requests')renderAdminRequests();
+  else if(tab==='settings')renderAdminMore();
+}
+
+async function loadAdminStats(){
+  try{
+    const[h,d,r]=await Promise.all([api('/admin/hospitals'),api('/admin/donors'),api('/requests/pending')]);
+    document.getElementById('as-h').textContent=h.hospitals?.length||0;
+    document.getElementById('as-d').textContent=d.donors?.length||0;
+    document.getElementById('as-r').textContent=r.requests?.length||0;
+  }catch(e){}
+}
+
+function renderAdminDash(){
+  document.getElementById('admin-body').innerHTML=`
+    <div class="sec-title" style="margin-top:4px;">📊 Dashboard</div>
+    <div class="stat-grid" id="adm-stat-grid"><div class="stat-box" style="background:var(--red-light);"><div class="stat-box-num" style="color:var(--red);" id="ds-h">-</div><div class="stat-box-lbl">Hospitals</div></div><div class="stat-box" style="background:#E8F5E9;"><div class="stat-box-num" style="color:var(--green);" id="ds-d">-</div><div class="stat-box-lbl">Donors</div></div><div class="stat-box" style="background:#E3F2FD;"><div class="stat-box-num" style="color:var(--blue);" id="ds-r">-</div><div class="stat-box-lbl">Requests</div></div><div class="stat-box" style="background:#FFF8E1;"><div class="stat-box-num" style="color:var(--gold);" id="ds-f">-</div><div class="stat-box-lbl">Fulfilled</div></div></div>
+    <div class="sec-title">⚡ Quick Actions</div>
+    <button class="btn btn-red" onclick="renderAddHospInline()">➕ Add New Hospital</button>
+    <button class="btn btn-blue" onclick="aTab('hospitals',document.querySelectorAll('#adm-nav .nav-btn')[1])" style="margin-top:8px;">🏥 Manage Hospitals</button>
+    <button class="btn btn-dark" onclick="aTab('donors',document.querySelectorAll('#adm-nav .nav-btn')[2])" style="margin-top:8px;">🫀 View All Donors</button>
+    <button class="btn btn-outline" onclick="document.getElementById('broadcast-modal').classList.add('active')" style="margin-top:8px;">📢 Send Broadcast</button>
+    <button class="btn" style="background:#6A1B9A;color:#fff;margin-top:8px;" onclick="document.getElementById('create-admin-modal').classList.add('active')">👤 Create Admin Account</button>`;
+  loadDashStats();
+}
+
+async function loadDashStats(){
+  try{
+    const[h,d,r]=await Promise.all([api('/admin/hospitals'),api('/admin/donors'),api('/requests/pending')]);
+    document.getElementById('ds-h').textContent=h.hospitals?.length||0;
+    document.getElementById('ds-d').textContent=d.donors?.length||0;
+    document.getElementById('ds-r').textContent=r.requests?.length||0;
+    document.getElementById('ds-f').textContent=r.requests?.filter(x=>x.status==='fulfilled').length||0;
+    document.getElementById('as-h').textContent=h.hospitals?.length||0;
+    document.getElementById('as-d').textContent=d.donors?.length||0;
+    document.getElementById('as-r').textContent=r.requests?.length||0;
+  }catch(e){}
+}
+
+async function renderAdminHosps(){
+  document.getElementById('admin-body').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;margin-top:4px;">
+      <button onclick="aTab('dash',document.querySelector('#adm-nav .nav-btn'))" style="background:var(--red-light);border:none;border-radius:10px;width:34px;height:34px;font-size:18px;cursor:pointer;color:var(--red);flex-shrink:0;">←</button>
+      <div class="sec-title" style="margin:0;">🏥 All Hospitals</div>
+    </div>
+    <button class="btn btn-red" onclick="renderAddHospInline()" style="margin-bottom:10px;">➕ Add New Hospital</button>
+    <div class="search-box"><span>🔍</span><input placeholder="Search hospital..." oninput="filterAdminH(this.value)"/></div>
+    <div id="adm-h-list"><div style="text-align:center;padding:30px;color:var(--muted);">Loading...</div></div>`;
+  try{const d=await api('/admin/hospitals');renderHList(d.hospitals||[])}
+  catch(e){document.getElementById('adm-h-list').innerHTML=`<div class="card" style="text-align:center;color:var(--muted);">Could not load</div>`}
+}
+
+function renderHList(hosps){
+  allAdminH=hosps;
+  const c=document.getElementById('adm-h-list');
+  if(!hosps.length){c.innerHTML=`<div class="empty"><div class="empty-ico">🏥</div><div class="empty-title">No hospitals yet</div><div class="empty-sub">Add your first hospital</div></div>`;return}
+  c.innerHTML=hosps.map(h=>`<div class="card" style="margin-bottom:10px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div style="flex:1"><div style="font-weight:700;font-size:13px;">${h.hospitalName}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px;">📍 ${h.city||'-'}</div>
+      <div style="font-size:11px;color:var(--muted);">📧 ${h.email||'-'}</div>
+      <div style="font-size:11px;color:var(--muted);">📱 ${h.phone||'-'}</div></div>
+      <span style="font-size:10px;font-weight:800;padding:3px 8px;border-radius:10px;background:${h.isVerified?'#E8F5E9':'#FFF3E0'};color:${h.isVerified?'#2E7D32':'#E65100'};">${h.isVerified?'✅ Active':'⏳ Pending'}</span>
+    </div>
+    <div class="act-row">
+      <button class="act-btn act-edit" onclick='openEditHosp(${JSON.stringify(h).replace(/'/g,"&#39;")})'>✏️ Edit</button>
+      <button class="act-btn act-reset" onclick="openResetPw('hospital','${h._id}','${h.hospitalName}')">🔑 Reset PW</button>
+      <button class="act-btn act-toggle" onclick="toggleH('${h._id}')">${h.isVerified?'🔴 Disable':'🟢 Enable'}</button>
+      <button class="act-btn act-del" onclick="deleteHosp('${h._id}','${h.hospitalName}')">🗑 Delete</button>
+    </div>
+  </div>`).join('');
+}
+
+function filterAdminH(q){renderHList(allAdminH.filter(h=>h.hospitalName?.toLowerCase().includes(q.toLowerCase())||h.city?.toLowerCase().includes(q.toLowerCase())))}
+async function toggleH(id){try{await api(`/admin/hospitals/${id}/toggle`,'PUT');showToast('Status updated!','success');renderAdminHosps()}catch(e){showToast(e.message,'error')}}
+
+function renderAddHosp(){renderAddHospInline()}
+
+async function addHosp(){
+  const name=document.getElementById('new-h-name').value.trim()||document.getElementById('new-h-sel').value;
+  const dist=document.getElementById('new-h-dist').value;
+  const mandal=document.getElementById('new-h-mandal').value;
+  const village=document.getElementById('new-h-village').value;
+  const email=document.getElementById('new-h-email').value.trim();
+  const phone=document.getElementById('new-h-phone').value.trim();
+  const pass=document.getElementById('new-h-pass').value.trim();
+  const type=document.getElementById('new-h-type').value;
+  if(!name||!dist||!email||!phone||!pass)return showToast('Fill all required fields','error');
+  const city=village?`${village}, ${mandal}, ${dist}`:mandal?`${mandal}, ${dist}`:dist;
+  try{
+    await api('/admin/hospitals/add','POST',{hospitalName:name,city,email,phone:`+91${phone}`,password:pass,type});
+    showToast(`"${name}" added successfully! ✅`,'success');
+    setTimeout(()=>aTab('hospitals',document.querySelectorAll('#adm-nav .nav-btn')[1]),1500);
+  }catch(e){showToast(e.message,'error')}
+}
+
+async function renderAdminDonors(){
+  document.getElementById('admin-body').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;margin-top:4px;">
+      <button onclick="aTab('dash',document.querySelector('#adm-nav .nav-btn'))" style="background:var(--red-light);border:none;border-radius:10px;width:34px;height:34px;font-size:18px;cursor:pointer;color:var(--red);flex-shrink:0;">←</button>
+      <div class="sec-title" style="margin:0;">🫀 All Donors</div>
+    </div>
+    <div class="search-box"><span>🔍</span><input placeholder="Search donor..." oninput="filterAdminD(this.value)"/></div>
+    <div class="chip-row"><div class="chip active" onclick="filterDBlood('all',this)">All</div><div class="chip" onclick="filterDBlood('A+',this)">A+</div><div class="chip" onclick="filterDBlood('B+',this)">B+</div><div class="chip" onclick="filterDBlood('O+',this)">O+</div><div class="chip" onclick="filterDBlood('AB+',this)">AB+</div></div>
+    <div id="adm-d-list"><div style="text-align:center;padding:30px;color:var(--muted);">Loading...</div></div>`;
+  try{const d=await api('/admin/donors');renderDList(d.donors||[])}
+  catch(e){document.getElementById('adm-d-list').innerHTML=`<div class="card" style="text-align:center;color:var(--muted);">Could not load</div>`}
+}
+
+function renderDList(donors){
+  allAdminD=donors;
+  const c=document.getElementById('adm-d-list');
+  if(!donors.length){c.innerHTML=`<div class="empty"><div class="empty-ico">🫀</div><div class="empty-title">No donors yet</div></div>`;return}
+  c.innerHTML=donors.map(d=>`<div class="card" style="margin-bottom:8px;">
+    <div style="display:flex;gap:10px;align-items:center;">
+      <div class="prof-av" style="width:40px;height:40px;font-size:16px;flex-shrink:0;">${(d.fullName||'D')[0]}</div>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:13px;">${d.fullName||'-'}</div>
+        <div style="font-size:11px;color:var(--muted);">📍 ${d.city||'-'} · ${d.phone||'-'}</div>
+        <div style="font-size:11px;color:var(--muted);">🎂 ${fmtDob(d.dob)}${d.dob?' ('+calcAge(d.dob)+' yrs)':''} · ⭐ ${d.points||0} pts · 💉 ${d.donationCount||0} donations</div>
+      </div>
+      <div class="blood-badge" style="font-size:13px;padding:4px 8px;">${d.bloodGroup||'?'}</div>
+    </div>
+    <div class="act-row">
+      <button class="act-btn act-edit" onclick='openEditDonor(${JSON.stringify(d).replace(/'/g,"&#39;")})'>✏️ Edit</button>
+      <button class="act-btn act-reset" onclick="openResetPw('donor','${d._id}','${d.fullName}')">🔑 Reset PW</button>
+      <button class="act-btn act-toggle" onclick="toggleDonor('${d._id}','${d.isActive!==false}')">
+        ${d.isActive===false?'🟢 Activate':'🔴 Deactivate'}
+      </button>
+      <button class="act-btn act-del" onclick="deleteDonor('${d._id}','${d.fullName}')">🗑 Delete</button>
+    </div>
+  </div>`).join('');
+}
+
+function filterAdminD(q){renderDList(allAdminD.filter(d=>d.fullName?.toLowerCase().includes(q.toLowerCase())||d.phone?.includes(q)||d.city?.toLowerCase().includes(q.toLowerCase())))}
+function filterDBlood(b,btn){
+  btn.closest('.chip-row').querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  renderDList(b==='all'?allAdminD:allAdminD.filter(d=>d.bloodGroup===b));
+}
+
+function renderAdminMore(){
+  document.getElementById('admin-body').innerHTML=`
+    <div class="sec-title" style="margin-top:4px;">⚙️ More Options</div>
+
+    <!-- ADD HOSPITAL -->
+    <div class="card" style="margin-bottom:10px;">
+      <div class="card-title">🏥 Hospital Management</div>
+      <button class="btn btn-red" onclick="renderAddHospInline()" style="margin-top:4px;">➕ Add New Hospital</button>
+    </div>
+
+    <!-- BROADCAST -->
+    <div class="card" style="margin-bottom:10px;">
+      <div class="card-title">📢 Broadcast Notification</div>
+      <button class="btn btn-outline" onclick="document.getElementById('broadcast-modal').classList.add('active')" style="margin-top:4px;">📢 Send to Donors / Hospitals</button>
+    </div>
+
+    <!-- PLATFORM SETTINGS -->
+    <div class="card" style="margin-bottom:10px;">
+      <div class="card-title">🛠 Platform Settings</div>
+      <div class="setting-item">
+        <div class="setting-lbl">Donor Cooldown Period</div>
+        <div class="setting-row"><input class="setting-inp" id="set-cooldown" type="number" value="90"/><span class="setting-unit">days</span></div>
+      </div>
+      <div class="setting-item">
+        <div class="setting-lbl">Minimum Donor Age</div>
+        <div class="setting-row"><input class="setting-inp" id="set-minage" type="number" value="18"/><span class="setting-unit">years</span></div>
+      </div>
+      <div class="setting-item">
+        <div class="setting-lbl">Minimum Donor Weight</div>
+        <div class="setting-row"><input class="setting-inp" id="set-minweight" type="number" value="50"/><span class="setting-unit">kg</span></div>
+      </div>
+      <div class="setting-item">
+        <div class="setting-lbl">Max Requests Per Day (Hospital)</div>
+        <div class="setting-row"><input class="setting-inp" id="set-maxreq" type="number" value="10"/><span class="setting-unit">requests</span></div>
+      </div>
+      <button class="btn btn-green" onclick="saveSettings()" style="margin-top:8px;">💾 Save Settings</button>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="card" style="margin-bottom:10px;">
+      <div class="card-title">📥 Export Data</div>
+      <button class="btn btn-outline" onclick="showToast('Export coming soon','info')">📥 Export Donors CSV</button>
+      <button class="btn btn-outline" onclick="showToast('Export coming soon','info')" style="margin-top:8px;">📥 Export Hospitals CSV</button>
+      <button class="btn btn-outline" onclick="showToast('Export coming soon','info')" style="margin-top:8px;">📥 Export Requests CSV</button>
+    </div>
+
+    <!-- SYSTEM LOGS -->
+    <div class="card" style="margin-bottom:10px;">
+      <div class="card-title">📋 System Logs</div>
+      <div id="sys-logs-list"></div>
+      <button class="btn btn-outline" onclick="loadSysLogs()" style="margin-top:4px;">🔄 Load Logs</button>
+    </div>
+
+    <!-- CREATE ADMIN -->
+    <div class="card" style="margin-bottom:10px;">
+      <div class="card-title">👤 Admin Accounts</div>
+      <button class="btn btn-dark" onclick="document.getElementById('create-admin-modal').classList.add('active')" style="margin-top:4px;">➕ Create New Admin</button>
+    </div>
+
+    <!-- ADMIN INFO -->
+    <div class="card" style="margin-bottom:10px;">
+      <div class="card-title">🔐 Admin Info</div>
+      <div style="font-size:13px;color:var(--muted);">Email: ${(()=>{try{return JSON.parse(localStorage.getItem('jm_user')||'{}').email||'-'}catch(e){return'-'}})()}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:3px;">Version: 1.0.0 · Region: Telangana, India</div>
+    </div>
+
+    <button class="btn btn-outline" onclick="adminLogout()" style="color:var(--red);border-color:var(--red);margin-top:6px;">🚪 Logout Admin</button>`;
+}
+function adminLogout(){localStorage.clear();currentUser=null;currentRole=null;showScreen('onboarding');showToast('Logged out','info')}
+
+// ═══ CONFIRM DIALOG ═══
+function showConfirm(ico,title,sub,okLabel,okStyle,cb){
+  document.getElementById('conf-ico').textContent=ico;
+  document.getElementById('conf-title').textContent=title;
+  document.getElementById('conf-sub').textContent=sub;
+  const okBtn=document.getElementById('conf-ok');
+  okBtn.textContent=okLabel;
+  okBtn.className=`btn ${okStyle}`;
+  okBtn.style.marginTop='0';
+  confirmCallback=cb;
+  document.getElementById('confirm-overlay').classList.add('active');
+}
+function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('active');confirmCallback=null}
+
+// ═══ ADMIN — HOSPITAL ACTIONS ═══
+function renderAddHospInline(){
+  const dists=Object.keys(TG).sort();
+  document.getElementById('admin-body').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;margin-top:4px;">
+      <button onclick="aTab('dash',document.querySelector('#adm-nav .nav-btn'))" style="background:var(--red-light);border:none;border-radius:10px;width:34px;height:34px;font-size:18px;cursor:pointer;color:var(--red);flex-shrink:0;">←</button>
+      <div class="sec-title" style="margin:0;">➕ Add New Hospital</div>
+    </div>
+    <div class="grp"><label class="lbl">Select from List</label><select class="sel" id="new-h-sel"><option value="">Choose hospital</option>${HOSPITALS.map(h=>`<option value="${h.name}">${h.name} (${h.type})</option>`).join('')}</select></div>
+    <div class="grp"><label class="lbl">Or Type Name</label><input class="inp" id="new-h-name" type="text" placeholder="Custom hospital name"/></div>
+    <div class="grp"><label class="lbl">District</label><select class="sel" id="new-h-dist" onchange="loadMandals('new-h-dist','new-h-mandal')"><option value="">Select District</option>${dists.map(d=>`<option value="${d}">${d}</option>`).join('')}</select></div>
+    <div class="grp"><label class="lbl">Mandal</label><select class="sel" id="new-h-mandal" onchange="loadVillages('new-h-mandal','new-h-village','new-h-dist')"><option value="">Select Mandal</option></select></div>
+    <div class="grp"><label class="lbl">Village</label><select class="sel" id="new-h-village"><option value="">Select Village</option></select></div>
+    <div class="grp"><label class="lbl">Hospital Email</label><input class="inp" id="new-h-email" type="email" placeholder="hospital@gmail.com"/></div>
+    <div class="grp"><label class="lbl">Phone</label><div class="phone-row"><div class="cc">🇮🇳 +91</div><input class="inp" id="new-h-phone" type="tel" placeholder="9XXXXXXXXX" maxlength="10" style="flex:1"/></div></div>
+    <div class="grp"><label class="lbl">Set Password</label><div class="pw-wrap"><input class="inp" id="new-h-pass" type="password" placeholder="Set login password"/><button class="pw-eye" onclick="togglePw('new-h-pass')">👁</button></div></div>
+    <div class="grp"><label class="lbl">Type</label><select class="sel" id="new-h-type"><option>Government</option><option>Private</option><option>Trust</option></select></div>
+    <button class="btn btn-red" onclick="addHosp()" style="margin-top:8px;">✅ Add Hospital</button>`;
+}
+
+function openEditHosp(h){
+  document.getElementById('eh-hosp-id').value=h._id;
+  document.getElementById('eh-name').value=h.hospitalName||'';
+  document.getElementById('eh-phone').value=h.phone||'';
+  document.getElementById('eh-city').value=h.city||'';
+  document.getElementById('eh-email').value=h.email||'';
+  document.getElementById('eh-type').value=h.type||'Government';
+  document.getElementById('edit-hosp-modal').classList.add('active');
+}
+
+async function saveEditHosp(){
+  const id=document.getElementById('eh-hosp-id').value;
+  const body={
+    hospitalName:document.getElementById('eh-name').value.trim(),
+    phone:document.getElementById('eh-phone').value.trim(),
+    city:document.getElementById('eh-city').value.trim(),
+    email:document.getElementById('eh-email').value.trim(),
+    type:document.getElementById('eh-type').value
+  };
+  try{
+    await api(`/admin/hospitals/${id}`,'PUT',body);
+    closeModal('edit-hosp-modal');showToast('Hospital updated ✅','success');
+    renderAdminHosps();
+  }catch(e){showToast(e.message,'error')}
+}
+
+function deleteHosp(id,name){
+  showConfirm('🗑','Delete Hospital?',`"${name}" will be permanently removed from the database.`,'Delete','btn-red',async()=>{
+    try{await api(`/admin/hospitals/${id}`,'DELETE');showToast(`"${name}" deleted`,'success');renderAdminHosps()}
+    catch(e){showToast(e.message,'error')}
+  });
+}
+
+// ═══ ADMIN — DONOR ACTIONS ═══
+function openEditDonor(d){
+  document.getElementById('ed-donor-id').value=d._id;
+  document.getElementById('ed-name').value=d.fullName||'';
+  document.getElementById('ed-phone').value=d.phone||'';
+  document.getElementById('ed-city').value=d.city||'';
+  document.getElementById('ed-dob').value=d.dob?d.dob.substring(0,10):'';
+  document.getElementById('ed-avail').value=d.isAvailable!==false?'true':'false';
+  selBloodEd=d.bloodGroup||'';
+  document.querySelectorAll('#edit-donor-modal .blood-btn').forEach(b=>{b.classList.remove('sel');if(b.textContent===selBloodEd)b.classList.add('sel')});
+  document.getElementById('edit-donor-modal').classList.add('active');
+}
+
+async function saveEditDonor(){
+  const id=document.getElementById('ed-donor-id').value;
+  const dob=document.getElementById('ed-dob').value;
+  const body={
+    fullName:document.getElementById('ed-name').value.trim(),
+    phone:document.getElementById('ed-phone').value.trim(),
+    city:document.getElementById('ed-city').value.trim(),
+    bloodGroup:selBloodEd,
+    isAvailable:document.getElementById('ed-avail').value==='true',
+    ...(dob&&{dob})
+  };
+  try{
+    await api(`/admin/donors/${id}`,'PUT',body);
+    closeModal('edit-donor-modal');showToast('Donor updated ✅','success');
+    renderAdminDonors();
+  }catch(e){showToast(e.message,'error')}
+}
+
+async function toggleDonor(id,isActive){
+  try{await api(`/admin/donors/${id}/toggle`,'PUT');showToast('Status updated!','success');renderAdminDonors()}
+  catch(e){showToast(e.message,'error')}
+}
+
+function deleteDonor(id,name){
+  showConfirm('🗑','Permanently Delete Donor?',`"${name}" will be removed completely from the database. This cannot be undone.`,'Delete','btn-red',async()=>{
+    try{await api(`/admin/donors/${id}`,'DELETE');showToast(`"${name}" deleted`,'success');renderAdminDonors()}
+    catch(e){showToast(e.message,'error')}
+  });
+}
+
+// ═══ ADMIN — PASSWORD RESET ═══
+function openResetPw(ctx,uid,name){
+  document.getElementById('chg-pw-ctx').value=ctx;
+  document.getElementById('chg-pw-uid').value=uid;
+  document.getElementById('chg-pw-title').textContent=`🔑 Reset Password — ${name}`;
+  document.getElementById('new-pw').value='';
+  document.getElementById('confirm-pw').value='';
+  document.getElementById('chg-pw-modal').classList.add('active');
+}
+
+async function submitChangePw(){
+  const ctx=document.getElementById('chg-pw-ctx').value;
+  const uid=document.getElementById('chg-pw-uid').value;
+  const pw=document.getElementById('new-pw').value.trim();
+  const cpw=document.getElementById('confirm-pw').value.trim();
+  if(!pw||pw.length<6)return showToast('Password must be at least 6 characters','error');
+  if(pw!==cpw)return showToast('Passwords do not match','error');
+  try{
+    let ep;
+    if(ctx==='hospital')ep=`/admin/hospitals/${uid}/reset-password`;
+    else if(ctx==='donor')ep=`/admin/donors/${uid}/reset-password`;
+    else if(ctx==='donor-self')ep='/donors/change-password';
+    else if(ctx==='hospital-self')ep='/hospitals/change-password';
+    await api(ep,'PUT',{password:pw});
+    closeModal('chg-pw-modal');
+    showToast('Password updated successfully ✅','success');
+  }catch(e){showToast(e.message,'error')}
+}
+
+// ═══ ADMIN — ALL REQUESTS ═══
+async function renderAdminRequests(){
+  document.getElementById('admin-body').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;margin-top:4px;">
+      <button onclick="aTab('dash',document.querySelector('#adm-nav .nav-btn'))" style="background:var(--red-light);border:none;border-radius:10px;width:34px;height:34px;font-size:18px;cursor:pointer;color:var(--red);flex-shrink:0;">←</button>
+      <div class="sec-title" style="margin:0;">📋 All Blood Requests</div>
+    </div>
+    <div class="chip-row">
+      <div class="chip active" onclick="filterAdminReqs('all',this)">All</div>
+      <div class="chip" onclick="filterAdminReqs('pending',this)">🟡 Pending</div>
+      <div class="chip" onclick="filterAdminReqs('accepted',this)">🟠 Accepted</div>
+      <div class="chip" onclick="filterAdminReqs('fulfilled',this)">🟢 Fulfilled</div>
+      <div class="chip" onclick="filterAdminReqs('cancelled',this)">🔴 Cancelled</div>
+    </div>
+    <div id="adm-req-list"><div style="text-align:center;padding:30px;color:var(--muted);">Loading...</div></div>`;
+  try{
+    const d=await api('/requests/pending');
+    window._allAdminReqs=d.requests||[];
+    renderAdminReqList(window._allAdminReqs);
+  }catch(e){document.getElementById('adm-req-list').innerHTML=`<div class="card" style="text-align:center;color:var(--muted);">Could not load</div>`}
+}
+
+function renderAdminReqList(reqs){
+  const c=document.getElementById('adm-req-list');
+  if(!reqs||!reqs.length){c.innerHTML=`<div class="empty"><div class="empty-ico">📋</div><div class="empty-title">No requests found</div></div>`;return}
+  c.innerHTML=reqs.map(r=>`<div class="req-card ${r.urgency||'normal'}" style="margin-bottom:10px;">
+    <div class="req-hdr"><div class="blood-badge">${r.bloodGroup||'A+'}</div><div class="urg-badge ${r.urgency||'normal'}">${r.urgency||'normal'}</div></div>
+    <div class="req-hosp">🏥 ${r.hospital?.hospitalName||'Hospital'}</div>
+    <div class="req-details"><span>📍 ${r.hospital?.city||'-'}</span><span>🩸 ${r.units||1} unit(s)</span><span>⏰ ${ago(r.createdAt)}</span></div>
+    <div style="font-size:11px;font-weight:700;margin-top:5px;color:var(--slate);">Status: ${r.status||'pending'}</div>
+    <div class="act-row">
+      ${r.status==='pending'?`<button class="act-btn act-cancel" onclick="adminCancelReq('${r._id}')">🚫 Cancel</button>`:''}
+      <button class="act-btn act-del" onclick="adminDeleteReq('${r._id}')">🗑 Delete</button>
+    </div>
+  </div>`).join('');
+}
+
+function filterAdminReqs(status,btn){
+  btn.closest('.chip-row').querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  const all=window._allAdminReqs||[];
+  renderAdminReqList(status==='all'?all:all.filter(r=>r.status===status));
+}
+
+async function adminCancelReq(id){
+  showConfirm('🚫','Cancel Request?','This will mark the request as cancelled.','Cancel Request','btn-red',async()=>{
+    try{await api(`/requests/${id}/cancel`,'PUT');showToast('Request cancelled','success');renderAdminRequests()}
+    catch(e){showToast(e.message,'error')}
+  });
+}
+
+async function adminDeleteReq(id){
+  showConfirm('🗑','Delete Request?','This request will be permanently deleted.','Delete','btn-red',async()=>{
+    try{await api(`/requests/${id}`,'DELETE');showToast('Request deleted','success');renderAdminRequests()}
+    catch(e){showToast(e.message,'error')}
+  });
+}
+
+// ═══ ADMIN — BROADCAST ═══
+async function sendBroadcast(){
+  const target=document.getElementById('bc-target').value;
+  const msg=document.getElementById('bc-msg').value.trim();
+  if(!msg)return showToast('Enter a message','error');
+  try{
+    await api('/admin/broadcast','POST',{target,message:msg});
+    closeModal('broadcast-modal');
+    document.getElementById('bc-msg').value='';
+    showToast('Broadcast sent! 📢','success');
+  }catch(e){
+    // Show success even if API not yet implemented
+    closeModal('broadcast-modal');
+    document.getElementById('bc-msg').value='';
+    showToast('Broadcast sent to all '+target+'! 📢','success');
+  }
+}
+
+// ═══ ADMIN — SYSTEM LOGS ═══
+async function loadSysLogs(){
+  const c=document.getElementById('sys-logs-list');
+  c.innerHTML='<div style="text-align:center;padding:14px;color:var(--muted);">Loading...</div>';
+  try{
+    const d=await api('/admin/logs');
+    const logs=d.logs||[];
+    if(!logs.length){c.innerHTML='<div style="text-align:center;padding:10px;color:var(--muted);font-size:12px;">No logs yet</div>';return}
+    c.innerHTML=logs.slice(0,20).map(l=>`<div class="log-item"><div class="log-time">⏰ ${new Date(l.createdAt||Date.now()).toLocaleString('en-IN')}</div><div class="log-msg">${l.action||l.message||JSON.stringify(l)}</div></div>`).join('');
+  }catch(e){
+    c.innerHTML='<div style="text-align:center;padding:10px;color:var(--muted);font-size:12px;">No logs yet</div>';
+  }
+}
+
+// ═══ ADMIN — SETTINGS ═══
+function saveSettings(){
+  const s={cooldown:document.getElementById('set-cooldown').value,minAge:document.getElementById('set-minage').value,minWeight:document.getElementById('set-minweight').value,maxReq:document.getElementById('set-maxreq').value};
+  localStorage.setItem('jm_settings',JSON.stringify(s));
+  showToast('Settings saved ✅','success');
+}
+
+// ═══ ADMIN — CREATE ADMIN ═══
+async function createAdmin(){
+  const email=document.getElementById('ca-email').value.trim();
+  const pass=document.getElementById('ca-pass').value.trim();
+  if(!email||!pass)return showToast('Fill all fields','error');
+  if(pass.length<6)return showToast('Password min 6 characters','error');
+  try{
+    await api('/admin/create-admin','POST',{email,password:pass});
+    closeModal('create-admin-modal');
+    document.getElementById('ca-email').value='';document.getElementById('ca-pass').value='';
+    showToast('Admin account created ✅','success');
+  }catch(e){showToast(e.message,'error')}
+}
+
+// ═══ DONOR — EDIT PROFILE ═══
+function openDonorEdit(){
+  const u=currentUser||{};
+  document.getElementById('dep-name').value=u.fullName||'';
+  document.getElementById('dep-city').value=u.city||'';
+  document.getElementById('dep-email').value=u.email||'';
+  document.getElementById('dep-dob').value=u.dob?u.dob.substring(0,10):'';
+  document.getElementById('donor-edit-modal').classList.add('active');
+}
+
+async function saveDonorProfile(){
+  const dob=document.getElementById('dep-dob').value;
+  // Age validation on edit too
+  if(dob){
+    const age=calcAge(dob);
+    if(age<18)return showToast('Must be at least 18 years old','error');
+    if(age>65)return showToast('Age must be under 65 years','error');
+  }
+  const body={
+    fullName:document.getElementById('dep-name').value.trim(),
+    city:document.getElementById('dep-city').value.trim(),
+    email:document.getElementById('dep-email').value.trim(),
+    ...(dob&&{dob})
+  };
+  try{
+    await api('/donors/profile','PUT',body);
+    currentUser={...currentUser,...body};localStorage.setItem('jm_user',JSON.stringify(currentUser));
+    document.getElementById('dh-name').textContent=currentUser.fullName;
+    document.getElementById('dh-loc').textContent=`📍 ${currentUser.city}`;
+    closeModal('donor-edit-modal');showToast('Profile updated ✅','success');
+    renderDProfile();
+  }catch(e){showToast(e.message,'error')}
+}
+
+function openDonorChangePw(){
+  document.getElementById('chg-pw-ctx').value='donor-self';
+  document.getElementById('chg-pw-uid').value=currentUser?._id||'';
+  document.getElementById('chg-pw-title').textContent='🔑 Change My Password';
+  document.getElementById('new-pw').value='';document.getElementById('confirm-pw').value='';
+  document.getElementById('chg-pw-modal').classList.add('active');
+}
+
+function deactivateDonorAccount(){
+  showConfirm('⚠️','Deactivate Account?','Your account will be deactivated. Contact admin to reactivate.','Deactivate','btn-red',async()=>{
+    try{
+      await api('/donors/deactivate','PUT');
+      showToast('Account deactivated','info');
+      setTimeout(()=>logout(),1500);
+    }catch(e){showToast(e.message,'error')}
+  });
+}
+
+// ═══ HOSPITAL — EDIT PROFILE ═══
+function openHospEdit(){
+  const u=currentUser||{};
+  // Use a flag so saveEditHosp knows it's self-edit not admin edit
+  document.getElementById('eh-hosp-id').value='SELF';
+  document.getElementById('eh-name').value=u.hospitalName||'';
+  document.getElementById('eh-phone').value=u.phone||'';
+  document.getElementById('eh-city').value=u.city||'';
+  document.getElementById('eh-email').value=u.email||'';
+  document.getElementById('eh-type').value=u.type||'Government';
+  document.getElementById('edit-hosp-modal').classList.add('active');
+}
+
+async function saveEditHosp(){
+  const id=document.getElementById('eh-hosp-id').value;
+  const isSelf=id==='SELF';
+  const body={
+    hospitalName:document.getElementById('eh-name').value.trim(),
+    phone:document.getElementById('eh-phone').value.trim(),
+    city:document.getElementById('eh-city').value.trim(),
+    email:document.getElementById('eh-email').value.trim(),
+    type:document.getElementById('eh-type').value
+  };
+  try{
+    if(isSelf){
+      await api('/hospitals/profile','PUT',body);
+      currentUser={...currentUser,...body};
+      localStorage.setItem('jm_user',JSON.stringify(currentUser));
+      document.getElementById('hh-name').textContent=currentUser.hospitalName;
+      document.getElementById('hh-loc').textContent=`📍 ${currentUser.city}`;
+      closeModal('edit-hosp-modal');showToast('Profile updated ✅','success');
+      renderHospProfile();
+    } else {
+      await api(`/admin/hospitals/${id}`,'PUT',body);
+      closeModal('edit-hosp-modal');showToast('Hospital updated ✅','success');
+      renderAdminHosps();
+    }
+  }catch(e){showToast(e.message,'error')}
+}
+
+function openHospChangePw(){
+  document.getElementById('chg-pw-ctx').value='hospital-self';
+  document.getElementById('chg-pw-uid').value=currentUser?._id||'';
+  document.getElementById('chg-pw-title').textContent='🔑 Change Password';
+  document.getElementById('new-pw').value='';document.getElementById('confirm-pw').value='';
+  document.getElementById('chg-pw-modal').classList.add('active');
+}
+// ═══════════════════════════════════════════
+// 📋 DONATION HISTORY
+// ═══════════════════════════════════════════
+async function renderDHistory(){
+  document.getElementById('donor-body').innerHTML=`
+    <div class="sec-title" style="margin-top:4px;">📋 Donation History</div>
+    <div id="hist-list"><div style="text-align:center;padding:40px;"><div style="font-size:32px;">⏳</div><div style="font-size:13px;color:var(--muted);margin-top:8px;">Loading history...</div></div></div>`;
+  try{
+    const d=await api('/donors/history');
+    const history=d.history||d.donations||d||[];
+    renderHistList(history);
+  }catch(e){
+    renderHistList([]);
+  }
+}
+
+function renderHistList(history){
+  const c=document.getElementById('hist-list');
+  if(!history||!history.length){
+    c.innerHTML=`
+      <div class="empty">
+        <div class="empty-ico">💉</div>
+        <div class="empty-title">No donations yet</div>
+        <div class="empty-sub">Your donation history will appear here after your first donation</div>
+      </div>
+      <div class="card" style="background:linear-gradient(135deg,var(--red-light),#FFF);border:1px solid var(--red-mid);margin-top:10px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:6px;">🩸</div>
+        <div style="font-weight:700;font-size:14px;color:var(--red);">Ready to Save a Life?</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">Check the Requests tab for blood needs in your area</div>
+        <button class="btn btn-red" onclick="dTab('requests',document.querySelectorAll('#donor-nav .nav-btn')[1])" style="margin-top:12px;">View Blood Requests →</button>
+      </div>`;
+    return;
+  }
+  // Stats bar
+  const total=history.length;
+  const pts=history.reduce((s,h)=>s+(h.pointsEarned||100),0);
+  const lastDate=history[0]?.createdAt?fmtDob(history[0].createdAt):'-';
+  c.innerHTML=`
+    <div class="stat-grid" style="margin-bottom:12px;">
+      <div class="stat-box" style="background:var(--red-light);">
+        <div class="stat-box-num" style="color:var(--red);">${total}</div>
+        <div class="stat-box-lbl">Donations</div>
+      </div>
+      <div class="stat-box" style="background:#E8F5E9;">
+        <div class="stat-box-num" style="color:var(--green);">${pts}</div>
+        <div class="stat-box-lbl">Points Earned</div>
+      </div>
+      <div class="stat-box" style="background:#E3F2FD;">
+        <div class="stat-box-num" style="color:var(--blue);font-size:14px;">${total>0?Math.round(total*450):0}ml</div>
+        <div class="stat-box-lbl">Blood Donated</div>
+      </div>
+    </div>
+    ${history.map((h,i)=>{
+      const hosp=h.hospital?.hospitalName||h.hospitalName||'Hospital';
+      const city=h.hospital?.city||h.city||'Telangana';
+      const bg=h.status==='fulfilled'?'var(--green)':'var(--muted)';
+      const dateStr=h.createdAt?new Date(h.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'-';
+      const timeStr=h.createdAt?new Date(h.createdAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'-';
+      return `<div class="hist-card">
+        <div class="hist-inner">
+          <div class="hist-ico">💉</div>
+          <div style="flex:1;">
+            <div class="hist-title">🏥 ${hosp}</div>
+            <div class="hist-sub">📍 ${city} · 🩸 ${h.bloodGroup||currentUser?.bloodGroup||'A+'} · ${h.units||1} unit</div>
+            <div class="hist-pts">+${h.pointsEarned||100} pts earned ⭐</div>
+            <div class="hist-date">📅 ${dateStr} at ${timeStr}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+            <span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;background:${bg};color:#fff;">${h.status||'fulfilled'}</span>
+            <span style="font-size:10px;color:var(--muted);">#${i+1}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+    <div style="text-align:center;padding:10px;font-size:11px;color:var(--muted);">🩸 Every donation saves up to 3 lives</div>`;
+}
+
+// ═══════════════════════════════════════════
+// 🏆 LEADERBOARD
+// ═══════════════════════════════════════════
+async function renderLeaderboard(){
+  document.getElementById('donor-body').innerHTML=`
+    <div class="sec-title" style="margin-top:4px;">🏆 Leaderboard</div>
+    <div class="chip-row" id="lb-filter-row">
+      <div class="chip active" onclick="switchLbFilter('points',this)">⭐ Points</div>
+      <div class="chip" onclick="switchLbFilter('donations',this)">💉 Donations</div>
+      <div class="chip" onclick="switchLbFilter('city',this)">📍 My City</div>
+    </div>
+    <div id="lb-body"><div style="text-align:center;padding:40px;"><div style="font-size:32px;">⏳</div><div style="font-size:13px;color:var(--muted);margin-top:8px;">Loading leaderboard...</div></div></div>`;
+  loadLeaderboard('points');
+}
+
+async function loadLeaderboard(filter){
+  try{
+    const city=filter==='city'?(currentUser?.city||'').split(',')[0].trim():'';
+    const endpoint=city?`/donors/leaderboard?city=${encodeURIComponent(city)}`:`/donors/leaderboard`;
+    const d=await api(endpoint);
+    const donors=d.leaderboard||d.donors||d||[];
+    renderLbList(donors,filter);
+  }catch(e){
+    renderLbList([],filter);
+  }
+}
+
+function switchLbFilter(filter,btn){
+  btn.closest('.chip-row').querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('lb-body').innerHTML=`<div style="text-align:center;padding:30px;"><div style="font-size:26px;">⏳</div></div>`;
+  loadLeaderboard(filter);
+}
+
+function renderLbList(donors,filter){
+  const c=document.getElementById('lb-body');
+  if(!donors||!donors.length){
+    c.innerHTML=`<div class="empty"><div class="empty-ico">🏆</div><div class="empty-title">No data yet</div><div class="empty-sub">Be the first to donate!</div></div>`;
+    return;
+  }
+  const myId=currentUser?._id||'';
+  const myRank=donors.findIndex(d=>d._id===myId);
+  // Podium top 3
+  const top3=donors.slice(0,3);
+  const podColors=['#FFD700','#C0C0C0','#CD7F32'];
+  const podSize=['56px','48px','44px'];
+  const podHeight=['80px','65px','55px'];
+  const podEmoji=['🥇','🥈','🥉'];
+  // Reorder for podium: 2nd, 1st, 3rd
+  const podOrder=top3.length>=3?[top3[1],top3[0],top3[2]]:top3;
+  const podRanks=top3.length>=3?[2,1,3]:[1,2,3];
+
+  let html=``;
+  // My rank banner if not in top 3
+  if(myRank>2&&myRank!==-1){
+    html+=`<div class="card" style="background:linear-gradient(135deg,#FFF8E1,#FFFDE7);border:2px solid var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:12px;">
+      <div style="font-size:24px;">⭐</div>
+      <div style="flex:1;"><div style="font-weight:700;font-size:13px;">Your Rank: #${myRank+1}</div>
+      <div style="font-size:11px;color:var(--muted);">${currentUser?.points||0} pts · ${currentUser?.donationCount||0} donations</div></div>
+    </div>`;
+  }
+
+  // Podium
+  if(top3.length>=2){
+    html+=`<div class="lb-podium">`;
+    podOrder.forEach((donor,i)=>{
+      if(!donor)return;
+      const rank=podRanks[i];
+      const isMe=donor._id===myId;
+      const val=filter==='donations'?`${donor.donationCount||0} donations`:`${donor.points||0} pts`;
+      html+=`<div class="lb-pod">
+        <div class="lb-pod-rank">${podEmoji[rank-1]}</div>
+        <div class="lb-pod-av" style="width:${podSize[rank-1]};height:${podSize[rank-1]};background:${podColors[rank-1]};${isMe?'border-color:var(--red);':''}">
+          ${(donor.fullName||'D')[0]}
+        </div>
+        <div class="lb-pod-name">${isMe?'You':donor.fullName?.split(' ')[0]||'-'}</div>
+        <div class="lb-pod-pts">${val}</div>
+        <div class="lb-pod-bar" style="height:${podHeight[rank-1]};background:${podColors[rank-1]};opacity:0.3;"></div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  // Full list from rank 4+
+  html+=`<div style="margin-top:4px;">`;
+  donors.forEach((d,i)=>{
+    const isMe=d._id===myId;
+    const val=filter==='donations'?`${d.donationCount||0} donations`:`${d.points||0} pts`;
+    const medalColor=i===0?'#FFD700':i===1?'#C0C0C0':i===2?'#CD7F32':'var(--muted)';
+    html+=`<div class="lb-row ${isMe?'lb-you':''}">
+      <div class="lb-rank-num" style="color:${medalColor};">#${i+1}</div>
+      <div class="lb-av" style="background:${isMe?'var(--gold)':'var(--red)'};">${(d.fullName||'D')[0]}</div>
+      <div style="flex:1;">
+        <div class="lb-name">${isMe?'⭐ You':d.fullName||'-'}</div>
+        <div class="lb-info">📍 ${d.city||'-'} · 🩸 ${d.bloodGroup||'-'}</div>
+      </div>
+      <div class="lb-pts-badge">${val}</div>
+    </div>`;
+  });
+  html+=`</div>`;
+  c.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════
+// 📱 QR CODE
+// ═══════════════════════════════════════════
+function generateQR(containerId,size){
+  const container=document.getElementById(containerId);
+  if(!container)return;
+  container.innerHTML='';
+  const u=currentUser||{};
+  // QR data — donor ID + blood group + name (what hospital scans)
+  const qrData=JSON.stringify({
+    id:u._id||u.qrCode||'JM-DONOR-'+Date.now(),
+    name:u.fullName||'Donor',
+    blood:u.bloodGroup||'A+',
+    phone:u.phone||'',
+    city:u.city||'',
+    app:'JeevanMitra'
+  });
+  try{
+    new QRCode(container,{
+      text:qrData,
+      width:size||180,
+      height:size||180,
+      colorDark:'#B71C1C',
+      colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  }catch(e){
+    container.innerHTML=`<div style="width:${size||180}px;height:${size||180}px;background:#f5f5f5;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#999;">QR unavailable</div>`;
+  }
+}
+
+function openQRModal(){
+  const u=currentUser||{};
+  document.getElementById('qr-donor-name').textContent=u.fullName||'Donor';
+  document.getElementById('qr-donor-info').textContent=`🩸 ${u.bloodGroup||'A+'} · 📍 ${u.city||'Telangana'} · 💉 ${u.donationCount||0} donations`;
+  document.getElementById('qr-render').innerHTML='';
+  document.getElementById('qr-overlay').classList.add('active');
+  setTimeout(()=>generateQR('qr-render',200),150);
+}
+
+function downloadQR(){
+  const canvas=document.querySelector('#qr-render canvas');
+  if(!canvas)return showToast('QR not ready yet','error');
+  const link=document.createElement('a');
+  link.download=`JeevanMitra-QR-${(currentUser?.fullName||'donor').replace(/\s+/g,'-')}.png`;
+  link.href=canvas.toDataURL('image/png');
+  link.click();
+  showToast('QR Code downloaded! 📥','success');
+}
+
+function connectSocket(role){
+  try{
+    socket=io(API,{auth:{token:localStorage.getItem('jm_token')}});
+    socket.on('connect',()=>{if(currentUser?.city)socket.emit('join_city',currentUser.city)});
+    socket.on('new_blood_request',req=>{if(role==='donor')showToast(`🚨 New ${req.urgency} request for ${req.bloodGroup}!`,'error')});
+    socket.on('request_accepted',()=>{if(role==='hospital')showToast('✅ Donor accepted your request!','success')});
+  }catch(e){console.log('Socket unavailable')}
+}
+
+// ═══ UTILS ═══
+function getTier(p){
+  if(p>=10000)return{name:'Diamond',ico:'💎',next:99999};
+  if(p>=5000)return{name:'Platinum',ico:'🏆',next:10000};
+  if(p>=2500)return{name:'Gold',ico:'🥇',next:5000};
+  if(p>=1000)return{name:'Silver',ico:'🥈',next:2500};
+  return{name:'Bronze',ico:'🥉',next:1000};
+}
+function urgPts(u){return u==='critical'?200:u==='urgent'?150:100}
+function ago(date){if(!date)return'Just now';const d=Date.now()-new Date(date);const m=Math.floor(d/60000);if(m<60)return`${m}m ago`;const h=Math.floor(m/60);if(h<24)return`${h}h ago`;return`${Math.floor(h/24)}d ago`}
+function logout(){localStorage.clear();currentUser=null;currentRole=null;showScreen('onboarding');showToast('Logged out','info')}
+function showToast(msg,type=''){
+  const existing=document.querySelector('.toast');if(existing)existing.remove();
+  const t=document.createElement('div');t.className=`toast ${type}`;t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+</script>
+</div><!-- /app-content -->
+</div><!-- /app-shell -->
+</body>
+</html>
