@@ -4,72 +4,31 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Hospital = require('../models/Hospital');
 const Donor = require('../models/Donor');
-const Request = require('../models/Request'); // <-- Added Request model
+const Request = require('../models/Request');
+const { Alert } = require('../models/Other');
 const { auth } = require('../middleware/auth');
 
-// ═══ AUTHENTICATION ══════════════════════════════════════════
-
-// POST /api/hospitals/login
+// ═══ PART 2: HOSPITAL AUTH ═══
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ success: false, message: 'Email and password are required' });
+    if (!email || !password) return res.status(400).json({ success: false, message: 'Email and password required' });
 
     const hospital = await Hospital.findOne({ email: email.toLowerCase() });
     if (!hospital) return res.status(404).json({ success: false, message: 'Hospital not found' });
-
     if (hospital.isVerified === false) return res.status(403).json({ success: false, message: 'Account pending admin verification' });
 
     const isMatch = await bcrypt.compare(password, hospital.password);
     if (!isMatch) return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
-    const token = jwt.sign(
-      { id: hospital._id, email: hospital.email, role: 'hospital' },
-      process.env.JWT_SECRET || 'default_secret_key',
-      { expiresIn: '24h' }
-    );
-
-    res.json({ 
-      success: true, token, 
-      hospital: { _id: hospital._id, hospitalName: hospital.hospitalName, email: hospital.email, city: hospital.city, phone: hospital.phone, type: hospital.type }
-    });
+    const token = jwt.sign({ id: hospital._id, role: 'hospital' }, process.env.JWT_SECRET || 'default_secret_key', { expiresIn: '24h' });
+    res.json({ success: true, token, hospital: { _id: hospital._id, hospitalName: hospital.hospitalName } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// ═══ PROFILE MANAGEMENT ══════════════════════════════════════
-
-router.get('/profile', auth('hospital'), async (req, res) => {
-  try {
-    const hospital = await Hospital.findById(req.user.id).select('-password');
-    if (!hospital) return res.status(404).json({ success: false, message: 'Hospital not found' });
-    res.json({ success: true, hospital });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-router.put('/profile', auth('hospital'), async (req, res) => {
-  try {
-    const { hospitalName, phone, city, email, type } = req.body;
-    const updates = {};
-    if (hospitalName) updates.hospitalName = hospitalName;
-    if (phone) updates.phone = phone;
-    if (city) updates.city = city;
-    if (email) updates.email = email.toLowerCase();
-    if (type) updates.type = type;
-
-    const hospital = await Hospital.findByIdAndUpdate(req.user.id, { $set: updates }, { new: true }).select('-password');
-    res.json({ success: true, message: 'Profile updated', hospital });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// ═══ BLOOD REQUESTS (NEW!) ═══════════════════════════════════
-
-// GET all requests created by this hospital
+// ═══ PART 2: BLOOD REQUESTS & MATCHING ENGINE ═══
 router.get(['/requests', '/request'], auth('hospital'), async (req, res) => {
   try {
     const requests = await Request.find({ hospitalId: req.user.id }).sort({ createdAt: -1 });
@@ -79,53 +38,73 @@ router.get(['/requests', '/request'], auth('hospital'), async (req, res) => {
   }
 });
 
-// POST a new blood request
 router.post(['/requests', '/request'], auth('hospital'), async (req, res) => {
   try {
-    // Checking multiple property names to safely match your frontend form data
     const bloodGroup = req.body.bloodGroup || req.body.bloodGroupRequired;
-    const units = req.body.units || req.body.unitsRequired || 1;
     const urgency = req.body.urgencyLevel || req.body.urgency || 'normal';
-    const patientName = req.body.patientName;
-    const doctorRefNo = req.body.doctorRefNo || req.body.doctorRef;
-    const notes = req.body.notes;
 
-    if (!bloodGroup) {
-      return res.status(400).json({ success: false, message: 'Blood group is required' });
-    }
+    if (!bloodGroup) return res.status(400).json({ success: false, message: 'Blood group required' });
 
     const newRequest = new Request({
       hospitalId: req.user.id,
       bloodGroup,
-      units,
+      units: req.body.units || 1,
       urgency,
-      patientName,
-      doctorRefNo,
-      notes,
+      patientName: req.body.patientName,
+      doctorRefNo: req.body.doctorRefNo,
+      notes: req.body.notes,
       status: 'pending'
     });
-
     await newRequest.save();
 
-    // Trigger Socket.IO broadcast if configured
-    const io = req.app.get('io');
-    if (io) {
-      io.emit('new_request', newRequest);
+    // 90-Day Cooldown Check applied to matching donors
+    const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const matchingDonors = await Donor.find({
+      bloodGroup: bloodGroup,
+      isActive: true,
+      availabilityStatus: 'available',
+      $or: [{ lastDonationDate: { $exists: false } }, { lastDonationDate: { $lte: ninetyDaysAgo } }]
+    });
+
+    if (matchingDonors.length > 0) {
+      const alerts = matchingDonors.map(d => ({ donorId: d._id, requestId: newRequest._id, status: 'pending' }));
+      await Alert.insertMany(alerts);
     }
 
-    res.status(201).json({ success: true, message: 'Blood request posted successfully', request: newRequest });
+    const io = req.app.get('io');
+    if (io) matchingDonors.forEach(d => io.to(`donor_${d._id}`).emit('new_alert', { request: newRequest }));
+
+    res.status(201).json({ success: true, request: newRequest, alerted: matchingDonors.length });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// ═══ DONOR SCANNER / LOOKUP ══════════════════════════════════
-
-router.get('/phone/:phone', auth('hospital'), async (req, res) => {
+// ═══ PART 2: MARK COMPLETED & AWARD POINTS ═══
+router.put('/requests/:id/complete', auth('hospital'), async (req, res) => {
   try {
-    const donor = await Donor.findOne({ phone: req.params.phone }).select('-password -otpCode -otpExpiresAt');
-    if (!donor) return res.status(404).json({ success: false, message: 'Donor not found' });
-    res.json({ success: true, donor });
+    const request = await Request.findOne({ _id: req.params.id, hospitalId: req.user.id });
+    if (!request) return res.status(404).json({ success: false, message: 'Request not found' });
+
+    request.status = 'completed';
+    await request.save();
+
+    // Award Points based on Urgency Level (Step 11)
+    if (request.acceptedBy) {
+      const donor = await Donor.findById(request.acceptedBy);
+      if (donor) {
+        let points = 10; // Normal
+        if (request.urgency === 'urgent') points = 20;
+        if (request.urgency === 'emergency' || request.urgency === 'critical') points = 30;
+
+        donor.points = (donor.points || 0) + points;
+        donor.totalDonations = (donor.totalDonations || 0) + 1;
+        donor.lastDonationDate = new Date(); // Start 90-day cooldown
+        await donor.save();
+      }
+    }
+
+    res.json({ success: true, message: 'Request completed. Points awarded to donor.', request });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
