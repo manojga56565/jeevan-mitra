@@ -1507,15 +1507,25 @@ function renderNewReq(){
 
 function selUrgency(btn,u){selUrg=u;document.querySelectorAll('.urg-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel')}
 
-async function postReq(){
-  if(!selBloodReq)return showToast('Select blood group','error');
-  try{
-    await api('/requests','POST',{bloodGroup:selBloodReq,units:parseInt(document.getElementById('req-units').value),urgency:selUrg,wardNumber:document.getElementById('req-patient').value,notes:document.getElementById('req-notes').value});
-    showToast('Request posted! Notifying donors 🚨','success');
-    setTimeout(()=>renderHospHome(),1500);
-  }catch(e){showToast(e.message,'error')}
+async function postReq() {
+  if (!selBloodReq) return showToast('Select blood group', 'error');
+  try {
+    // These field names now match your backend Request model
+    await api('/hospitals/requests', 'POST', {
+      bloodGroup: selBloodReq,
+      quantity: parseInt(document.getElementById('req-units').value),
+      urgency: selUrg,
+      patientName: document.getElementById('req-patient').value,
+      doctorRefNo: document.getElementById('req-doctor').value,
+      patientReason: document.getElementById('req-notes').value
+    });
+    
+    showToast('Request posted! Notifying donors 🚨', 'success');
+    setTimeout(() => renderHospHome(), 1500);
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
 }
-
 async function fulfill(id){
   try{await api(`/requests/${id}/fulfill`,'PUT');showToast('Marked as fulfilled! 🎉','success');loadHospReqs(false)}
   catch(e){showToast(e.message,'error')}
