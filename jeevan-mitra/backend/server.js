@@ -27,11 +27,11 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch(e => console.error('❌ MongoDB error:', e.message));
 
-// Routes
-app.use('/api/auth',     require('./routes/authRoutes'));
-app.use('/api/donor',    require('./routes/donorRoutes'));
-app.use('/api/hospital', require('./routes/hospitalRoutes'));
-app.use('/api/admin',    require('./routes/adminRoutes'));
+// Routes (Fixed the Plurals!)
+app.use('/api/auth',      require('./routes/authRoutes'));
+app.use('/api/donors',    require('./routes/donorRoutes'));    // Added 's'
+app.use('/api/hospitals', require('./routes/hospitalRoutes')); // Added 's'
+app.use('/api/admin',     require('./routes/adminRoutes'));
 
 // Health check
 app.get('/health', (req, res) => {
