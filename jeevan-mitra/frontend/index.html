@@ -1510,7 +1510,7 @@ function selUrgency(btn,u){selUrg=u;document.querySelectorAll('.urg-btn').forEac
 async function postReq() {
   if (!selBloodReq) return showToast('Select blood group', 'error');
   try {
-    // These field names now match your backend Request model
+    // FIXED: Changed '/requests' to '/hospitals/requests'
     await api('/hospitals/requests', 'POST', {
       bloodGroup: selBloodReq,
       quantity: parseInt(document.getElementById('req-units').value),
@@ -1523,6 +1523,7 @@ async function postReq() {
     showToast('Request posted! Notifying donors 🚨', 'success');
     setTimeout(() => renderHospHome(), 1500);
   } catch (e) {
+    // This will now show you the real reason if it fails
     showToast(e.message, 'error');
   }
 }
